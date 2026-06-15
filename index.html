@@ -10,19 +10,6 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&family=Quicksand:wght@400..700&display=swap" rel="stylesheet">
-  <!-- MathJax for high-quality mathematical notations -->
-  <script>
-    window.MathJax = {
-      tex: {
-        inlineMath: [['$', '$'], ['\\(', '\\)']],
-        displayMath: [['$$', '$$'], ['\\[', '\\]']]
-      },
-      svg: {
-        fontCache: 'global'
-      }
-    };
-  </script>
-  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
   <style>
     body {
@@ -59,7 +46,7 @@
   <header class="bg-white shadow-sm border-b border-gray-100 py-4 px-6 sticky top-0 z-40">
     <div class="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
       <div class="flex items-center gap-3">
-        <!-- Bounce Mascot SVG -->
+        <!-- Animated Mascot Logo -->
         <svg class="w-10 h-10 text-amber-400 animate-bounce" viewBox="0 0 24 24" fill="currentColor">
           <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H7c0-2.76 2.24-5 5-5s5 2.24 5 5c0 1.04-.42 1.99-1.07 2.75z"/>
         </svg>
@@ -92,13 +79,13 @@
     <!-- Left Column: Quiz Panel, Balance Scale, Answers Grid (8 Cols) -->
     <div class="lg:col-span-8 flex flex-col gap-6">
       
-      <!-- Balance Scale Simulator Box (Visible only on equation questions) -->
+      <!-- Balance Scale Lab Container (Visible on equation questions) -->
       <div id="simulator-container" class="bg-white rounded-3xl p-6 shadow-md border-4 border-dashed border-indigo-100 relative transition-all">
         <div class="flex justify-between items-center mb-4">
           <h3 class="text-base font-bold text-indigo-500 flex items-center gap-2">
             ⚖️ Balance Scale Lab
           </h3>
-          <span class="text-xs text-gray-400 bg-gray-100 px-2.5 py-1 rounded-full">Use the buttons below to help balance the scale!</span>
+          <span class="text-xs text-gray-400 bg-gray-100 px-2.5 py-1 rounded-full hidden sm:inline">Use the buttons below to help balance the scale!</span>
         </div>
         
         <div class="flex flex-col items-center justify-center py-4">
@@ -107,11 +94,11 @@
             <!-- Main Stand -->
             <path d="M140 100 L160 100 L170 190 L130 190 Z" fill="#D5D8DC" />
             <path d="M110 190 L190 190 L180 198 L120 198 Z" fill="#95A5A6" />
-            <!-- Center Joint Pivot -->
+            <!-- Center Pivot Joint -->
             <circle cx="150" cy="100" r="12" fill="#E67E22" />
             <circle cx="150" cy="100" r="6" fill="#F39C12" />
             
-            <!-- Scale Arm & Pans (Animated with JS) -->
+            <!-- Scale Arm & Pans (Animated via JS) -->
             <g id="scale-arm-group" class="scale-arm">
               <!-- Horizontal bar -->
               <line x1="50" y1="100" x2="250" y2="100" stroke="#7F8C8D" stroke-width="8" stroke-linecap="round" />
@@ -142,10 +129,10 @@
             </g>
           </svg>
 
-          <!-- Interactive Scale Weights Controller -->
-          <div class="flex gap-6 mt-4 justify-center items-center w-full">
+          <!-- Interactive Scale Controller -->
+          <div class="flex flex-col sm:flex-row gap-4 mt-4 justify-center items-center w-full">
             <div class="flex flex-col items-center bg-sky-50 p-2.5 rounded-2xl border border-sky-100">
-              <span class="text-xs font-bold text-sky-700 mb-1">Add to Left Side</span>
+              <span class="text-xs font-bold text-sky-700 mb-1">Add Left Side</span>
               <div class="flex gap-1.5">
                 <button onclick="changeWeight('left', -1)" class="bg-white hover:bg-sky-100 text-sky-600 font-black px-3 py-1.5 rounded-lg border border-sky-200 shadow-sm">-1</button>
                 <button onclick="changeWeight('left', 1)" class="bg-emerald-400 hover:bg-emerald-500 text-white font-black px-3 py-1.5 rounded-lg shadow-sm">+1</button>
@@ -157,7 +144,7 @@
             </div>
 
             <div class="flex flex-col items-center bg-sky-50 p-2.5 rounded-2xl border border-sky-100">
-              <span class="text-xs font-bold text-sky-700 mb-1">Add to Right Side</span>
+              <span class="text-xs font-bold text-sky-700 mb-1">Add Right Side</span>
               <div class="flex gap-1.5">
                 <button onclick="changeWeight('right', -1)" class="bg-white hover:bg-sky-100 text-sky-600 font-black px-3 py-1.5 rounded-lg border border-sky-200 shadow-sm">-1</button>
                 <button onclick="changeWeight('right', 1)" class="bg-emerald-400 hover:bg-emerald-500 text-white font-black px-3 py-1.5 rounded-lg shadow-sm">+1</button>
@@ -181,12 +168,11 @@
           </button>
         </div>
 
-        <!-- Question Text Content -->
+        <!-- Question Text Content (Written normally without LaTeX formulas) -->
         <div class="flex flex-col gap-4">
           <h2 id="question-text" class="text-xl sm:text-2xl font-extrabold text-gray-800 leading-snug">
             Loading fantastic questions for you...
           </h2>
-          <div id="math-helper" class="text-sm text-gray-500 italic hidden"></div>
         </div>
 
         <!-- Answers Selection Grid -->
@@ -245,7 +231,7 @@
 
       <!-- IB PYP Unit of Inquiry (UOI) Box -->
       <div class="pastel-purple rounded-3xl p-6 border border-purple-200 flex flex-col gap-3">
-        <h3 class="font-black text-purple-800 text-base">ℹ️ PYP Learner</h3>
+        <h3 class="font-black text-purple-800 text-base">ℹ️ PYP Learner Profile</h3>
         <p class="text-xs text-purple-900 leading-relaxed">
           In our unit <strong>"Patterns and Functions"</strong>, we practice being a <em>Thinker</em> and a <em>Reflective</em> learner to discover rules in number sequences and solve algebraic mysteries constructively!
         </p>
@@ -353,11 +339,6 @@
       setTimeout(() => playTone(147, 'triangle', 0.4, 0.15), 120); // D3
     }
 
-    function playSoundBalanced() {
-      playTone(587.33, 'sine', 0.1); // D5
-      setTimeout(() => playTone(880.00, 'sine', 0.25), 100); // A5
-    }
-
     // State Variables
     const totalQuestions = 15;
     let currentQuestionIndex = 0;
@@ -371,153 +352,153 @@
     let scaleRightWeight = 0;
     let scaleExpectedDiff = 0; 
 
-    // Bank of 15 Grade 4 PYP Algebra Questions in English
+    // Bank of 15 Grade 4 PYP Algebra Questions in English (Written normally without LaTeX formulas)
     const questions = [
       {
-        text: "Repeating Pattern: Budi arranges colorful blocks in a sequence: Red, Blue, Green, Red, Blue, Green, Red. What color should Budi place next to continue the pattern?",
-        badge: "Repeating Colors",
-        options: ["Blue", "Green", "Red", "Yellow"],
+        text: "Repeating Pattern: Andi arranges colored blocks in a sequence: Red, Yellow, Blue, Red, Yellow, Blue, Red. What color block should Andi place next to continue the pattern?",
+        badge: "Repeating Colors Pattern",
+        options: ["Yellow", "Blue", "Red", "Green"],
         correctIdx: 0,
-        rationale: "The repeating block pattern consists of 3 colors: Red-Blue-Green. Since the sequence ends on Red, the next block must be Blue.",
-        hint: "Look at the first 3 colors repeating recursively in the same exact layout.",
+        rationale: "The pattern repeats every 3 blocks: Red, Yellow, and then Blue. Since the sequence ends with a Red block, the next block must be Yellow.",
+        hint: "Look at the order of the first three colors that repeat regularly.",
         scaleType: false
       },
       {
-        text: "Growing Number Pattern: Look at this increasing number sequence:\n$$2, 5, 8, 11, \\dots$$\nWhat is the next number in the pattern?",
-        badge: "Constant Addition",
-        options: ["12", "13", "14", "15"],
+        text: "Growing Number Pattern: Look at this increasing number sequence: 3, 7, 11, 15, and so on. What is the next number that should follow to continue the pattern?",
+        badge: "Constant Addition Pattern",
+        options: ["17", "18", "19", "20"],
         correctIdx: 2,
-        rationale: "The rule of this pattern is adding $3$ ($+3$) to the previous number. Therefore, $11 + 3 = 14$.",
-        hint: "Calculate the difference between $2$ and $5$, or $5$ and $8$. Add that value to $11$.",
+        rationale: "The rule of this pattern is always adding 4 to the previous number. Therefore, 15 plus 4 is 19.",
+        hint: "Find the difference between the first and second numbers, or the second and third. Add that difference to the last number.",
         scaleType: false
       },
       {
-        text: "Balance Scale: On the left pan of a balance scale, there is a Mystery Box $x$ and a weight of $3\\text{ kg}$. On the right pan, there is a weight of $10\\text{ kg}$. To make the scale balance perfectly, how much does the mystery box $x$ weigh?",
+        text: "Balanced Scale: On the left pan of a balance scale, there is a Mystery Box x and a weight of 4 kg. On the right pan, there is a weight of 12 kg. To make the scale balance perfectly, how much must the Mystery Box x weigh?",
         badge: "One-step Equations",
-        options: ["5 kg", "6 kg", "7 kg", "13 kg"],
-        correctIdx: 2,
-        rationale: "The algebraic equation is $x + 3 = 10$. Subtracting $3$ from both sides gives $x = 7\\text{ kg}$.",
-        hint: "If you take away $3\\text{ kg}$ from the left side, you must also take away $3\\text{ kg}$ from the right side to keep it equal.",
+        options: ["6 kg", "8 kg", "10 kg", "16 kg"],
+        correctIdx: 1,
+        rationale: "For the scale to balance, the total weight on the left must equal the weight on the right. The mystery box's weight is 12 minus 4, which is 8 kg.",
+        hint: "If you take away 4 kg from the left pan, you must also take away 4 kg from the right pan to keep the scale level.",
         scaleType: true,
-        initLeft: 3, 
-        initRight: 10, 
-        targetX: 7 
+        initLeft: 4, 
+        initRight: 12, 
+        targetX: 8 
       },
       {
-        text: "If $\\triangle + 7 = 15$, what is the correct value of the triangle $\\triangle$ to make the mathematical statement TRUE?",
+        text: "Open Math Sentence: If Triangle plus 6 is equal to 14, what is the correct value of the Triangle to make this mathematical statement true?",
         badge: "Inverse Operations",
         options: ["6", "7", "8", "9"],
         correctIdx: 2,
-        rationale: "A mysterious value added to $7$ yields $15$. Find the value by using subtraction: $15 - 7 = 8$.",
-        hint: "Use subtraction (the inverse of addition) to find the value of the triangle.",
+        rationale: "An unknown number added to 6 equals 14. We can find it using subtraction: 14 minus 6 is 8.",
+        hint: "Use subtraction to reverse the addition of 6.",
+        scaleType: true,
+        initLeft: 6,
+        initRight: 14,
+        targetX: 8
+      },
+      {
+        text: "Magic Function Machine: A clever math machine changes an input number into an output number with a secret rule: Input 2 becomes Output 6, Input 4 becomes Output 12, Input 5 becomes Output 15. What is the secret rule programmed inside this machine?",
+        badge: "Input & Output Rules",
+        options: ["Add 4", "Multiply by 3", "Subtract 4", "Multiply by 2"],
+        correctIdx: 1,
+        rationale: "Every input number is multiplied by 3 to produce its output number. For example, 2 times 3 is 6, and 4 times 3 is 12.",
+        hint: "Compare each input with its output. Do they grow by addition, or multiplication?",
+        scaleType: false
+      },
+      {
+        text: "Identical Symbols: If two identical Star symbols added together make a total sum of: Star plus Star equals 16. What is the value of just one Star symbol?",
+        badge: "Identical Variables",
+        options: ["6", "7", "8", "9"],
+        correctIdx: 2,
+        rationale: "Two identical numbers add up to 16. We divide 16 into two equal parts: 16 divided by 2 is 8.",
+        hint: "Which twin numbers when added together make 16?",
+        scaleType: false
+      },
+      {
+        text: "Strawberry Balance Scale: On a market scale, the weight of 3 oranges is exactly equal to the weight of 9 strawberries. How many strawberries are equal to the weight of just 1 orange?",
+        badge: "Ratio Simplification",
+        options: ["2 strawberries", "3 strawberries", "4 strawberries", "6 strawberries"],
+        correctIdx: 1,
+        rationale: "If 3 oranges equal 9 strawberries, we can share the strawberries equally among the 3 oranges: 9 divided by 3 is 3 strawberries.",
+        hint: "Divide the total of 9 strawberries equally into 3 groups (one for each orange).",
+        scaleType: true,
+        initLeft: 3, 
+        initRight: 9, 
+        targetX: 3
+      },
+      {
+        text: "Mila is thinking of a secret number y. If she subtracts 5 from her secret number, the result is 11. What is Mila's secret number y?",
+        badge: "Subtraction Equations",
+        options: ["6", "15", "16", "20"],
+        correctIdx: 2,
+        rationale: "This equation is y minus 5 equals 11. By using the inverse operation, y is equal to 11 plus 5, which is 16.",
+        hint: "Since her number becomes 11 after losing 5, her original number must be larger than 11.",
+        scaleType: false
+      },
+      {
+        text: "Decreasing Number Pattern: Look at this decreasing sequence: 40, 35, 30, 25, and so on. What is the mathematical rule of this number pattern?",
+        badge: "Decreasing Patterns",
+        options: ["Subtract 5", "Subtract 10", "Add 5", "Subtract 4"],
+        correctIdx: 0,
+        rationale: "Each number in the sequence is always 5 less than the number before it. So the pattern rule is subtract 5.",
+        hint: "Count backward how many steps you take from 40 to reach 35, or from 35 to reach 30.",
+        scaleType: false
+      },
+      {
+        text: "Matchstick Pattern: To build 1 triangle shape, you need 3 matchsticks. To build 2 triangles next to each other, you need 5 matchsticks. To build 3 triangles, you need 7 matchsticks. How many matchsticks are needed to build 4 connected triangles?",
+        badge: "Geometric Growing Patterns",
+        options: ["8", "9", "10", "11"],
+        correctIdx: 1,
+        rationale: "The matchstick count forms a sequence: 3, 5, 7, ... which increases by adding 2 each time. The next term is 7 plus 2, which is 9 matchsticks.",
+        hint: "Each new triangle added only needs 2 more matchsticks because it shares a side with the previous triangle.",
+        scaleType: false
+      },
+      {
+        text: "If we know that: 5 multiplied by the Mystery Box is equal to 40. What is the correct number inside the Mystery Box?",
+        badge: "Multiplication Equations",
+        options: ["6", "7", "8", "9"],
+        correctIdx: 2,
+        rationale: "To find the unknown multiplier in the mystery box, we divide the total by 5: 40 divided by 5 is 8.",
+        hint: "Recall your multiplication table of 5. What number times 5 gives 40?",
+        scaleType: false
+      },
+      {
+        text: "True or False Statement: Is this mathematical statement true or false? 25 minus x is equal to 15, if x is equal to 10.",
+        badge: "Verifying Solutions",
+        options: ["TRUE", "FALSE"],
+        correctIdx: 0,
+        rationale: "If we replace x with 10, the math becomes 25 minus 10, which indeed equals 15. Therefore, the statement is true.",
+        hint: "Replace x with 10 and calculate if 25 minus 10 equals 15.",
+        scaleType: false
+      },
+      {
+        text: "Mystery Gift Scale: On the left pan of a scale, there is a Mystery Gift k and a weight of 7 kg. On the right pan, there is a weight of 15 kg. What is the weight of the Mystery Gift k to make the scale balanced?",
+        badge: "Equation Modeling",
+        options: ["6 kg", "7 kg", "8 kg", "22 kg"],
+        correctIdx: 2,
+        rationale: "The gift plus 7 kg must equal 15 kg. Subtracting 7 kg from both sides gives the weight of the gift k as 15 minus 7, which is 8 kg.",
+        hint: "The unknown weight of the gift plus 7 kg must equal 15 kg exactly.",
         scaleType: true,
         initLeft: 7,
         initRight: 15,
         targetX: 8
       },
       {
-        text: "Magic Function Machine: This clever math machine modifies an input number to an output number with a secret rule:\n- Input $3 \\rightarrow$ Output $6$\n- Input $5 \\rightarrow$ Output $10$\n- Input $8 \\rightarrow$ Output $16$\n\nWhat is the rule programmed inside the Function Machine?",
-        badge: "Input & Output Rules",
-        options: ["Add 3", "Multiply by 2", "Subtract 2", "Multiply by 3"],
-        correctIdx: 1,
-        rationale: "Every input value is doubled to create its output ($3 \\times 2 = 6$; $5 \\times 2 = 10$). Therefore, the rule is multiplied by $2$.",
-        hint: "Compare each input with its paired output. Do they grow by addition, or multiplication?",
-        scaleType: false
-      },
-      {
-        text: "If two identical Star symbols have a total sum of $\\bigstar + \\bigstar = 18$, what is the value of just one $\\bigstar$?",
-        badge: "Identical Variables",
-        options: ["6", "8", "9", "10"],
-        correctIdx: 2,
-        rationale: "Since there are two identical stars adding up to $18$, we divide $18$ into two equal shares: $18 \\div 2 = 9$.",
-        hint: "Which twin numbers when added together make $18$?",
-        scaleType: false
-      },
-      {
-        text: "Apple Balance: Two apples weigh exactly the same as 6 strawberries. How many strawberries are equal to the weight of just one apple?",
-        badge: "Ratio Simplification",
-        options: ["2 strawberries", "3 strawberries", "4 strawberries", "12 strawberries"],
-        correctIdx: 1,
-        rationale: "If $2\\text{ apples} = 6\\text{ strawberries}$, then $1\\text{ apple}$ weighs half of that, which is $6 \\div 2 = 3\\text{ strawberries}$.",
-        hint: "Divide the total number of strawberries equally into two groups for each apple.",
-        scaleType: true,
-        initLeft: 2, 
-        initRight: 6, 
-        targetX: 3
-      },
-      {
-        text: "Mila is thinking of a secret number $y$. If she subtracts $8$ from her secret number, the result is $12$. What is Mila's secret number $y$?",
-        badge: "Subtraction Equations",
-        options: ["4", "10", "18", "20"],
-        correctIdx: 3,
-        rationale: "The equation is $y - 8 = 12$. By reversing the operation, we get $y = 12 + 8 = 20$.",
-        hint: "Since her number is $12$ after losing $8$, her original number must be larger than $12$.",
-        scaleType: false
-      },
-      {
-        text: "Decreasing Pattern: Observe this decreasing sequence carefully:\n$$35, 31, 27, 23, \\dots$$\nWhat is the mathematical rule of this number pattern?",
-        badge: "Decreasing Patterns",
-        options: ["Subtract 3", "Subtract 4", "Add 4", "Subtract 5"],
-        correctIdx: 1,
-        rationale: "The sequence drops from $35$ to $31$ by subtracting $4$, and from $31$ to $27$ by subtracting $4$. The rule is subtract $4$.",
-        hint: "Count how many steps backward you must take from $35$ to land on $31$.",
-        scaleType: false
-      },
-      {
-        text: "Matchstick Patterns: To build one square, you need 4 matchsticks. To build 2 squares in a row, you need 7 matchsticks. For 3 squares, you need 10 matchsticks.\nHow many matchsticks are needed to build 4 squares in a row?",
-        badge: "Geometric Growing Patterns",
-        options: ["11", "12", "13", "14"],
-        correctIdx: 2,
-        rationale: "The matchstick count forms the pattern: $4, 7, 10, \\dots$ which increases by $+3$ each time. The next term is $10 + 3 = 13$.",
-        hint: "Each time we add another square to the row, we only need $3$ more matchsticks because they share an edge.",
-        scaleType: false
-      },
-      {
-        text: "If it is known that $4 \\times \\square = 36$, what is the correct value of the mystery box $\\square$?",
-        badge: "Multiplication Equations",
-        options: ["7", "8", "9", "12"],
-        correctIdx: 2,
-        rationale: "To find the unknown multiplier in the mystery box, we divide the total by $4$: $36 \\div 4 = 9$.",
-        hint: "Recall your multiplication table. What number multiplied by $4$ gives $36$?",
-        scaleType: false
-      },
-      {
-        text: "Is this algebraic statement TRUE or FALSE?\n$$18 - x = 11, \\text{ if } x = 7$$",
-        badge: "Verifying Solutions",
-        options: ["TRUE", "FALSE"],
-        correctIdx: 0,
-        rationale: "Let us substitute the variable $x$ with $7$. The calculation $18 - 7$ is indeed $11$. Hence, it is true.",
-        hint: "Replace the letter $x$ with $7$ and check if the math makes sense.",
-        scaleType: false
-      },
-      {
-        text: "Mystery Gift Scale: On the left pan, there is a Mystery Gift $k$ and a $5\\text{ kg}$ weight. On the right pan, there is a $12\\text{ kg}$ weight. What is the weight of the Mystery Gift $k$ to balance the scale?",
-        badge: "Equation Modeling",
-        options: ["5 kg", "7 kg", "8 kg", "17 kg"],
-        correctIdx: 1,
-        rationale: "The equation $k + 5 = 12$ is solved by subtracting $5$ from both sides, yielding $k = 7\\text{ kg}$.",
-        hint: "The unknown gift weight plus $5\\text{ kg}$ must be exactly equal to $12\\text{ kg}$.",
-        scaleType: true,
-        initLeft: 5,
-        initRight: 12,
-        targetX: 7
-      },
-      {
-        text: "A Magic Function Machine follows the rule: $\\text{Output} = \\text{Input} + 9$. If the input number fed into the machine is $13$, what output number will come out?",
+        text: "A Magic Function Machine follows this rule: Output is equal to Input plus 12. If the input number fed into the machine is 15, what output number will come out?",
         badge: "Evaluating Rules",
-        options: ["19", "21", "22", "23"],
-        correctIdx: 2,
-        rationale: "Using the machine's configured rule: $\\text{Input} (13) + 9 = 22$. The resulting output is $22$.",
-        hint: "Simply add the input value $13$ and the rule's value of $9$.",
+        options: ["25", "27", "29", "30"],
+        correctIdx: 1,
+        rationale: "Following the machine's rule, we add the input number to 12. So, 15 plus 12 is 27.",
+        hint: "Simply add the input value 15 and the rule's value of 12.",
         scaleType: false
       },
       {
-        text: "Andi has $n$ marbles in his pocket. After giving $6$ marbles to his younger brother, Andi has $15$ marbles left. Which mathematical sentence represents Andi's situation?",
+        text: "Beni has some marbles in his pocket (represented by the letter k). After giving 8 marbles to his younger brother, Beni has 12 marbles left. Which mathematical sentence represents Beni's situation?",
         badge: "Formulating Equations",
-        options: ["n + 6 = 15", "n - 6 = 15", "15 - n = 6", "n - 15 = 6"],
+        options: ["k plus 8 equals 12", "k minus 8 equals 12", "12 minus k equals 8", "k minus 12 equals 8"],
         correctIdx: 1,
-        rationale: "Initially there are $n$ marbles. Giving away $6$ implies subtracting $6$, leaving $15$. The equation is $n - 6 = 15$.",
-        hint: "His marbles decreased when given away. Find a statement that subtracts $6$ from $n$ and equals $15$.",
+        rationale: "Beni started with k marbles. Since his marbles decreased when he gave them away, we use subtraction. This gives the equation k minus 8 equals 12.",
+        hint: "His marbles decreased. Find a statement that subtracts 8 from k and equals 12.",
         scaleType: false
       }
     ];
@@ -581,25 +562,13 @@
         
         grid.appendChild(btn);
       });
-
-      // Rerender MathJax equations beautifully
-      if (window.MathJax) {
-        MathJax.typesetPromise();
-      }
     }
 
-    // Text To Speech (Audio Synthesis)
+    // Text To Speech (Audio Synthesis in English)
     function speakQuestion() {
       const q = questions[currentQuestionIndex];
-      // Strip out mathematical LaTeX syntax for natural speech engine
-      let cleanText = q.text.replace(/\$\$[\s\S]*?\$\$/g, ' mathematical sequence ');
-      cleanText = cleanText.replace(/\$/g, '');
-      cleanText = cleanText.replace(/\\triangle/g, 'triangle');
-      cleanText = cleanText.replace(/\\bigstar/g, 'star');
-      cleanText = cleanText.replace(/\\square/g, 'mystery box');
-      
-      const utterance = new SpeechSynthesisUtterance(cleanText);
-      utterance.lang = "en-US";
+      const utterance = new SpeechSynthesisUtterance(q.text);
+      utterance.lang = "en-US"; // Set English speech synthesis voice
       utterance.rate = 1.0;
       window.speechSynthesis.speak(utterance);
     }
@@ -649,7 +618,7 @@
       if (diff === 0) {
         indicator.textContent = "⚖️ Balanced!";
         indicator.className = "px-4 py-2 rounded-2xl font-black text-sm bg-emerald-100 text-emerald-700 shadow-sm border border-emerald-300";
-        playSoundBalanced();
+        playTone(587.33, 'sine', 0.1); // Play balanced tone
       } else {
         indicator.textContent = diff > 0 ? "⚠️ Left Heavy!" : "⚠️ Right Heavy!";
         indicator.className = "px-4 py-2 rounded-2xl font-black text-sm bg-amber-100 text-amber-700 animate-pulse";
@@ -727,11 +696,11 @@
       
       // Categorize PYP Learner Profile Performance
       if (correctAnswersCount >= 13) {
-        pypText.innerText = "Fantastic! You demonstrated high caliber learner attributes as a THINKER and KNOWLEDGEABLE mathematical mind. You have an exceptional grasp of patterns and algebraic equalities!";
+        pypText.innerText = "Fantastic! You demonstrated high-caliber learner attributes as a THINKER and KNOWLEDGEABLE mathematical mind. You have an exceptional grasp of patterns and algebraic equalities!";
       } else if (correctAnswersCount >= 8) {
         pypText.innerText = "Great job! You showed an excellent REFLECTIVE profile. You are successfully building connections between input-output functions and balanced scales. Keep learning!";
       } else {
-        pypText.innerText = "You investigated and worked bravely as an INQUIRER! Do not lose heart, algebra is an adventurous exploration. With slightly more scale-balancing practices, you will be a master soon!";
+        pypText.innerText = "You investigated and worked bravely as an INQUIRER! Do not lose heart, algebra is an adventurous exploration. With slightly more scale-balancing practice, you will be a master soon!";
       }
       
       document.getElementById("results-modal").classList.remove("hidden");
