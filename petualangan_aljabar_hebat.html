@@ -1,0 +1,1170 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Petualangan Aljabar Hebat - IB PYP Kelas 4</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Quicksand:wght@400;600;700&family=Fredoka+One&display=swap" rel="stylesheet">
+    
+    <!-- MathJax Configuration for Perfect Non-Formula Render -->
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                processEscapes: true
+            },
+            options: {
+                skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background-color: #FDFBF7;
+        }
+        .kids-heading {
+            font-family: 'Fredoka', sans-serif;
+        }
+        /* Smooth scale transitions */
+        .bounce-hover {
+            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .bounce-hover:hover {
+            transform: scale(1.05);
+        }
+        .active-btn {
+            transform: scale(0.95);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between overflow-x-hidden select-none bg-gradient-to-tr from-[#FFFDF9] via-[#F5FCFF] to-[#FFF9F9]">
+
+    <!-- APP HEADER -->
+    <header class="bg-white/90 backdrop-blur-md border-b-4 border-[#FFD000] py-3 px-6 flex justify-between items-center sticky top-0 z-40 shadow-sm">
+        <div class="flex items-center gap-3">
+            <svg class="w-10 h-10 text-[#FF8C00] animate-bounce" viewBox="0 0 100 100" fill="none">
+                <circle cx="50" cy="50" r="40" fill="#FFF2CC" stroke="#FFD000" stroke-width="4"/>
+                <text x="36" y="62" fill="#FF8C00" font-family="'Fredoka'" font-weight="bold" font-size="36">x</text>
+            </svg>
+            <div>
+                <h1 class="kids-heading text-xl md:text-2xl font-bold text-[#FF8C00]">Misi Aljabar!</h1>
+                <p class="text-[10px] text-[#00B4D8] font-black tracking-widest uppercase">IB PYP Kelas 4 • Pola & Penyelidikan</p>
+            </div>
+        </div>
+        
+        <div class="flex items-center gap-3">
+            <!-- Score Indicator -->
+            <div class="bg-[#FFF4E0] border-2 border-[#FFAA00] rounded-full px-4 py-1.5 flex items-center gap-1.5 shadow-sm">
+                <span class="text-base">⭐</span>
+                <span id="xp-display" class="font-bold text-[#9E6200] text-xs md:text-sm">0 XP</span>
+            </div>
+            
+            <!-- Scratchpad Trigger -->
+            <button id="scratchpad-btn" onclick="toggleScratchpad()" class="bg-[#E0F7FA] hover:bg-[#B2EBF2] border-2 border-[#00ACC1] active:scale-95 transition text-[#00838F] font-bold rounded-full px-4 py-1.5 text-xs md:text-sm shadow-sm flex items-center gap-1">
+                ✏️ <span>Area Gambar</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- SCRATCHPAD / DOODLE CANVAS -->
+    <div id="scratchpad" class="hidden fixed inset-0 z-50 bg-white/95 flex flex-col p-4">
+        <div class="flex justify-between items-center mb-2 border-b-2 border-gray-100 pb-2">
+            <h3 class="kids-heading text-lg font-bold text-[#00838F] flex items-center gap-2">
+                ✏️ Papan Coret-coret (Tuliskan Idemu!)
+            </h3>
+            <div class="flex items-center gap-2">
+                <button onclick="clearCanvas()" class="bg-red-50 hover:bg-red-100 text-red-600 font-bold px-3 py-1.5 rounded-xl text-xs">Hapus Layar</button>
+                <button onclick="toggleScratchpad()" class="bg-[#00838F] hover:bg-[#006064] text-white font-bold px-4 py-1.5 rounded-xl text-xs">Tutup</button>
+            </div>
+        </div>
+        <div class="flex-1 bg-amber-50/20 border-4 border-dashed border-[#00ACC1] rounded-2xl relative cursor-crosshair overflow-hidden">
+            <canvas id="scratch-canvas" class="absolute inset-0 w-full h-full"></canvas>
+        </div>
+        <p class="text-xs text-gray-400 mt-2 text-center">Gunakan jarimu atau mouse untuk mencoret-coret dalam menyelesaikan teka-teki aljabar!</p>
+    </div>
+
+    <!-- MAIN SLIDE BODY -->
+    <main class="flex-1 flex items-center justify-center p-4 relative my-4">
+        <!-- Back Arrow -->
+        <button id="prev-btn" onclick="changeSlide(-1)" class="absolute left-2 md:left-6 z-30 bg-white hover:bg-[#FFF4E0] text-[#FF8C00] border-4 border-[#FFE082] w-12 h-12 rounded-full flex items-center justify-center text-lg shadow-md active:scale-90 transition">
+            ◀
+        </button>
+
+        <!-- Slide Content Panel -->
+        <div id="slide-wrapper" class="w-full max-w-4xl bg-white rounded-3xl border-8 border-[#FFE082] shadow-xl overflow-hidden flex flex-col justify-between min-h-[500px] md:min-h-[550px] transition-all duration-300">
+            <!-- Top Loading Progress -->
+            <div class="w-full bg-[#FFF9E6] h-3">
+                <div id="progress-bar" class="bg-[#FF8C00] h-full transition-all duration-300" style="width: 3.3%"></div>
+            </div>
+
+            <!-- Dynamic Slot -->
+            <div id="slide-content" class="p-6 md:p-10 flex-1 flex flex-col justify-center overflow-y-auto max-h-[460px] md:max-h-[500px]">
+                <!-- Populated via Javascript -->
+            </div>
+
+            <!-- Bottom Status Indicator -->
+            <div class="bg-[#FFFDF5] border-t-2 border-[#FFF2CC] px-6 py-3 flex justify-between items-center text-xs md:text-sm font-bold text-[#FF8C00]">
+                <span id="section-name">Bersiap-siap</span>
+                <span id="slide-index" class="bg-[#FF8C00] text-white px-3 py-1 rounded-full">Slide 1 / 30</span>
+            </div>
+        </div>
+
+        <!-- Next Arrow -->
+        <button id="next-btn" onclick="changeSlide(1)" class="absolute right-2 md:right-6 z-30 bg-white hover:bg-[#FFF4E0] text-[#FF8C00] border-4 border-[#FFE082] w-12 h-12 rounded-full flex items-center justify-center text-lg shadow-md active:scale-90 transition">
+            ▶
+        </button>
+    </main>
+
+    <!-- TOAST POPUP NOTIFICATION -->
+    <div id="toast" class="hidden fixed bottom-12 left-1/2 transform -translate-x-1/2 z-50 bg-[#4CAF50] text-white font-bold px-6 py-3 rounded-2xl shadow-xl flex items-center gap-2 animate-bounce">
+        <span id="toast-icon">✨</span> <span id="toast-text">Luar Biasa!</span>
+    </div>
+
+    <!-- AUDIO & CONFETTI CELEBRATIONS -->
+    <canvas id="confetti" class="fixed inset-0 pointer-events-none z-50 w-full h-full hidden"></canvas>
+
+    <script>
+        // --- 1. SOUND GENERATION SYSTEM (WEB AUDIO API) ---
+        let audioCtx;
+        function getAudioContext() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+            return audioCtx;
+        }
+
+        function playSound(type) {
+            try {
+                const ctx = getAudioContext();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+
+                if (type === 'correct') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(523.25, ctx.currentTime); // C5
+                    osc.frequency.setValueAtTime(659.25, ctx.currentTime + 0.08); // E5
+                    osc.frequency.setValueAtTime(783.99, ctx.currentTime + 0.16); // G5
+                    osc.frequency.setValueAtTime(1046.50, ctx.currentTime + 0.24); // C6
+                    gain.gain.setValueAtTime(0.1, ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.4);
+                    osc.start(ctx.currentTime);
+                    osc.stop(ctx.currentTime + 0.4);
+                } else if (type === 'incorrect') {
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(220, ctx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(110, ctx.currentTime + 0.3);
+                    gain.gain.setValueAtTime(0.08, ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
+                    osc.start(ctx.currentTime);
+                    osc.stop(ctx.currentTime + 0.3);
+                } else if (type === 'click') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(440, ctx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(300, ctx.currentTime + 0.08);
+                    gain.gain.setValueAtTime(0.03, ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.08);
+                    osc.start(ctx.currentTime);
+                    osc.stop(ctx.currentTime + 0.08);
+                }
+            } catch (e) {
+                console.log("Audio synthesized successfully.");
+            }
+        }
+
+        // --- 2. THE 30 ADVENTURE SLIDES DATA (IB PYP LEVEL) ---
+        const slides = [
+            // Slide 1: Welcome / Title
+            {
+                section: "Mulai Belajar",
+                title: "Petualangan Aljabar Hebat!",
+                subtitle: "Memecahkan Kode Sistem & Timbangan Keseimbangan",
+                icon: "🚀",
+                render: () => `
+                    <div class="text-center">
+                        <div class="flex justify-center mb-4">
+                            <!-- SVG Balancing Scales and Mystery Box -->
+                            <svg class="w-36 h-36" viewBox="0 0 100 100" fill="none">
+                                <rect x="35" y="70" w="30" h="20" fill="#FFE082" stroke="#FFB300" stroke-width="3" rx="4"/>
+                                <text x="46" y="85" fill="#FF8C00" font-family="'Fredoka'" font-size="16" font-weight="bold">?</text>
+                                <circle cx="15" cy="40" r="10" fill="#EF5350" />
+                                <text x="12" y="44" fill="white" font-weight="bold" font-size="12">3</text>
+                                <circle cx="85" cy="40" r="10" fill="#42A5F5" />
+                                <text x="82" y="44" fill="white" font-weight="bold" font-size="12">x</text>
+                                <line x1="15" y1="55" x2="85" y2="55" stroke="#78909C" stroke-width="4" stroke-linecap="round"/>
+                                <circle cx="50" cy="55" r="4" fill="#37474F"/>
+                            </svg>
+                        </div>
+                        <h2 class="kids-heading text-3xl md:text-5xl font-extrabold text-[#D84315] mb-2">Misi Aljabar!</h2>
+                        <p class="text-base md:text-lg text-amber-700 font-bold mb-6">Temukan Bahasa Rahasia dari Pola & Keseimbangan</p>
+                        <div class="inline-block bg-[#FFF9E6] border-2 border-dashed border-[#FFE082] rounded-2xl p-4 max-w-lg mx-auto bounce-hover">
+                            <p class="text-xs md:text-sm text-amber-900 font-semibold">"Matematika penuh dengan pola. Hari ini, mari menjadi pemecah kode dan temukan nilai yang tersembunyi!"</p>
+                        </div>
+                    </div>
+                `
+            },
+            // Slide 2: IB PYP Framework Framework
+            {
+                section: "Mulai Belajar",
+                title: "Kerangka Penyelidikan Kita",
+                subtitle: "Ide Sentral & Konsep Kunci",
+                icon: "🗺️",
+                render: () => `
+                    <div class="w-full max-w-xl mx-auto space-y-4">
+                        <div class="bg-amber-50 border-l-4 border-[#FF8C00] p-3 rounded-r-xl">
+                            <h4 class="text-xs font-black text-[#B26A00] tracking-wider uppercase">Ide Sentral (Central Idea)</h4>
+                            <p class="text-sm font-bold text-gray-700">Pola dan keseimbangan membantu kita mewakili hubungan dan memecahkan misteri di dunia nyata.</p>
+                        </div>
+                        <div class="grid grid-cols-3 gap-2">
+                            <div class="bg-blue-50 border border-blue-200 p-2.5 rounded-xl text-center">
+                                <span class="text-2xl">🌱</span>
+                                <h5 class="text-xs font-bold text-blue-900 mt-1">Bentuk (Form)</h5>
+                                <p class="text-[10px] text-gray-500">Seperti apa pola itu?</p>
+                            </div>
+                            <div class="bg-emerald-50 border border-emerald-200 p-2.5 rounded-xl text-center">
+                                <span class="text-2xl">🔄</span>
+                                <h5 class="text-xs font-bold text-emerald-900 mt-1">Perubahan (Change)</h5>
+                                <p class="text-[10px] text-gray-500">Bagaimana ia bertumbuh?</p>
+                            </div>
+                            <div class="bg-purple-50 border border-purple-200 p-2.5 rounded-xl text-center">
+                                <span class="text-2xl">⚖️</span>
+                                <h5 class="text-xs font-bold text-purple-900 mt-1">Keseimbangan (Equilibrium)</h5>
+                                <p class="text-[10px] text-gray-500">Bagaimana agar ia seimbang?</p>
+                            </div>
+                        </div>
+                    </div>
+                `
+            },
+            // Slide 3: Learning Goals
+            {
+                section: "Mulai Belajar",
+                title: "Tujuan Eksplorasi Kita",
+                subtitle: "Apa yang akan kita temukan bersama",
+                icon: "🎯",
+                render: () => `
+                    <div class="max-w-xl mx-auto">
+                        <h3 class="kids-heading text-lg font-bold text-amber-800 text-center mb-4">Jalur Misimu:</h3>
+                        <ul class="space-y-3 text-xs md:text-sm">
+                            <li class="bg-amber-50 border-l-8 border-[#FF8C00] p-3 rounded-r-xl font-semibold text-amber-900 flex items-center gap-2">
+                                <span>🎨</span> Memahami bagaimana pola berubah dan tumbuh dari waktu ke waktu.
+                            </li>
+                            <li class="bg-blue-50 border-l-8 border-[#0288D1] p-3 rounded-r-xl font-semibold text-blue-900 flex items-center gap-2">
+                                <span>📦</span> Belajar cara menggunakan "huruf" (variabel) untuk mewakili angka misterius.
+                            </li>
+                            <li class="bg-emerald-50 border-l-8 border-[#388E3C] p-3 rounded-r-xl font-semibold text-emerald-900 flex items-center gap-2">
+                                <span>⚖️</span> Menyelesaikan timbangan dengan langkah-langkah mudah agar kedua sisi tetap sama.
+                            </li>
+                        </ul>
+                    </div>
+                `
+            },
+            // Slide 4: Warm-up 1 (Patterns)
+            {
+                section: "Pemanasan",
+                title: "Kereta Misteri Bentuk",
+                subtitle: "Bisakah kamu melihat polanya?",
+                icon: "🎨",
+                render: () => `
+                    <div class="text-center">
+                        <p class="text-sm font-semibold text-gray-600 mb-4">Perhatikan kereta bentuk ini baik-baik. Apa bentuk yang hilang di bagian akhir?</p>
+                        <div class="flex justify-center items-center gap-4 mb-6">
+                            <div class="bg-red-100 p-3 rounded-xl text-3xl">🔴</div>
+                            <div class="bg-blue-100 p-3 rounded-xl text-3xl">🔷</div>
+                            <div class="bg-red-100 p-3 rounded-xl text-3xl">🔴</div>
+                            <div class="bg-blue-100 p-3 rounded-xl text-3xl">🔷</div>
+                            <div class="bg-red-100 p-3 rounded-xl text-3xl">🔴</div>
+                            <div class="bg-amber-100 p-4 border-2 border-dashed border-amber-400 rounded-xl text-3xl animate-pulse">?</div>
+                        </div>
+                        <div class="flex justify-center gap-3">
+                            <button onclick="checkSlideAnswer(this, false, 'Aduh, pola itu tidak berulang dengan benar!', 5)" class="bg-white hover:bg-red-50 border-2 border-gray-300 px-6 py-2.5 rounded-xl font-bold text-xs">🔴 Lingkaran</button>
+                            <button onclick="checkSlideAnswer(this, true, 'Luar biasa! Urutannya bergantian Lingkaran, Wajik.', 5)" class="bg-white hover:bg-blue-50 border-2 border-gray-300 px-6 py-2.5 rounded-xl font-bold text-xs">🔷 Wajik</button>
+                            <button onclick="checkSlideAnswer(this, false, 'Kita belum melihat persegi hijau di sini!', 5)" class="bg-white hover:bg-emerald-50 border-2 border-gray-300 px-6 py-2.5 rounded-xl font-bold text-xs">🟩 Persegi</button>
+                        </div>
+                    </div>
+                `
+            },
+            // Slide 5: Warm-up 2 (Number sequences)
+            {
+                section: "Pemanasan",
+                title: "Lompatan Angka Emas",
+                subtitle: "Menemukan pola dalam angka",
+                icon: "🔢",
+                render: () => `
+                    <div class="text-center">
+                        <p class="text-sm font-semibold text-gray-600 mb-4">Kelinci-kelinci ini melompat dengan pola khusus. Berapa angka yang hilang?</p>
+                        <div class="flex justify-center items-center gap-4 mb-6">
+                            <span class="bg-amber-100 px-4 py-2 rounded-xl text-amber-800 font-bold">4</span>
+                            <span>➔</span>
+                            <span class="bg-amber-100 px-4 py-2 rounded-xl text-amber-800 font-bold">7</span>
+                            <span>➔</span>
+                            <span class="bg-amber-100 px-4 py-2 rounded-xl text-amber-800 font-bold">10</span>
+                            <span>➔</span>
+                            <span class="bg-amber-100 px-4 py-2 rounded-xl text-amber-800 font-bold">13</span>
+                            <span>➔</span>
+                            <span class="bg-pink-100 px-5 py-2.5 border-2 border-dashed border-pink-400 rounded-xl font-bold text-pink-700 animate-pulse">?</span>
+                        </div>
+                        <div class="flex justify-center gap-3">
+                            <button onclick="checkSlideAnswer(this, false, 'Coba tambahkan 3 ke angka 13!', 5)" class="bg-white hover:bg-amber-50 border-2 border-gray-200 px-6 py-2.5 rounded-xl font-bold text-xs">15</button>
+                            <button onclick="checkSlideAnswer(this, true, 'Tepat sekali! Setiap lompatan bertambah +3.', 5)" class="bg-white hover:bg-amber-50 border-2 border-gray-200 px-6 py-2.5 rounded-xl font-bold text-xs">16</button>
+                            <button onclick="checkSlideAnswer(this, false, 'Terlalu tinggi!', 5)" class="bg-white hover:bg-amber-50 border-2 border-gray-200 px-6 py-2.5 rounded-xl font-bold text-xs">17</button>
+                        </div>
+                    </div>
+                `
+            },
+            // Slide 6: Warm-up 3 (Input Output Machine)
+            {
+                section: "Pemanasan",
+                title: "Aturan Mesin Rahasia",
+                subtitle: "Apa yang dilakukan mesin ini?",
+                icon: "⚙️",
+                render: () => `
+                    <div class="grid md:grid-cols-2 gap-4 items-center max-w-2xl mx-auto">
+                        <div class="bg-blue-50 border border-blue-200 p-4 rounded-xl">
+                            <p class="text-xs font-bold text-blue-900 mb-2">Catatan Masukan (Input) ➔ Luaran (Output):</p>
+                            <ul class="space-y-1 text-xs font-semibold text-gray-700">
+                                <li class="flex justify-between"><span>Input: 2</span> <span>➔ Output: 5</span></li>
+                                <li class="flex justify-between"><span>Input: 5</span> <span>➔ Output: 8</span></li>
+                                <li class="flex justify-between"><span>Input: 10</span> <span>➔ Output: 13</span></li>
+                            </ul>
+                        </div>
+                        <div>
+                            <p class="text-sm font-semibold text-gray-600 mb-3">Aturan apa yang digunakan mesin ini untuk menghasilkan output?</p>
+                            <div class="grid grid-cols-1 gap-2">
+                                <button onclick="checkSlideAnswer(this, false, '2 × 2 adalah 4, bukan 5.', 5)" class="bg-white hover:bg-gray-100 p-2.5 rounded-xl border text-xs font-bold">Kalikan dengan 2</button>
+                                <button onclick="checkSlideAnswer(this, true, 'Hebat! Setiap input bertambah tepat +3.', 5)" class="bg-white hover:bg-gray-100 p-2.5 rounded-xl border text-xs font-bold">Tambah 3</button>
+                                <button onclick="checkSlideAnswer(this, false, '2 + 5 adalah 7, bukan 5.', 5)" class="bg-white hover:bg-gray-100 p-2.5 rounded-xl border text-xs font-bold">Tambah 5</button>
+                            </div>
+                        </div>
+                    </div>
+                `
+            },
+            // Slide 7: Real-world Connection 1 (Fruit Market)
+            {
+                section: "Hubungan Dunia Nyata",
+                title: "Belanja Misterius!",
+                subtitle: "Menggunakan bentuk untuk mewakili harga",
+                icon: "🍏",
+                render: () => `
+                    <div class="grid md:grid-cols-2 gap-6 items-center">
+                        <div class="space-y-3">
+                            <p class="text-sm text-gray-600 leading-relaxed font-semibold">
+                                Di pasar buah, beberapa harga ditutupi oleh stiker karena berubah setiap hari!
+                                <br><br>
+                                Misalkan:
+                                <br>
+                                <strong class="text-red-500 font-bold">🍎 + $1 = $5</strong>
+                                <br><br>
+                                Dengan berpikir sederhana, kamu bisa menebak berapa harga Apel itu. Ini adalah awal dari aljabar!
+                            </p>
+                        </div>
+                        <div class="bg-amber-50 p-4 rounded-2xl border-2 border-amber-200 text-center flex flex-col items-center">
+                            <span class="text-5xl mb-2 animate-bounce">🍎🏷️</span>
+                            <div class="flex gap-2">
+                                <button onclick="checkSlideAnswer(this, false, 'Coba periksa: $3 + $1 = $4.', 5)" class="bg-white px-4 py-2 rounded-xl border font-bold text-xs">$3</button>
+                                <button onclick="checkSlideAnswer(this, true, 'Luar biasa! $4 + $1 = $5.', 5)" class="bg-white px-4 py-2 rounded-xl border font-bold text-xs">$4</button>
+                            </div>
+                        </div>
+                    </div>
+                `
+            },
+            // Slide 8: Real-world Connection 2 (Seesaws)
+            {
+                section: "Hubungan Dunia Nyata",
+                title: "Keseimbangan Jungkat-jungkit",
+                subtitle: "Sama dengan berarti benar-benar rata",
+                icon: "⚖️",
+                render: () => `
+                    <div class="grid md:grid-cols-2 gap-6 items-center">
+                        <div class="order-2 md:order-1 flex justify-center bg-sky-50 p-4 rounded-2xl border-2 border-sky-100">
+                            <!-- Seesaw SVG -->
+                            <svg class="w-48 h-36" viewBox="0 0 100 80">
+                                <line x1="10" y1="50" x2="90" y2="50" stroke="#78909C" stroke-width="3"/>
+                                <polygon points="50,50 40,70 60,70" fill="#FF8C00"/>
+                                <circle cx="25" cy="42" r="8" fill="#FFB74D"/>
+                                <text x="21" y="45" fill="white" font-size="8" font-weight="bold">8kg</text>
+                                <circle cx="75" cy="42" r="8" fill="#4FC3F7"/>
+                                <text x="71" y="45" fill="white" font-size="8" font-weight="bold">?</text>
+                            </svg>
+                        </div>
+                        <div class="order-1 md:order-2">
+                            <p class="text-sm text-gray-600 leading-relaxed font-semibold">
+                                Saat kamu bermain jungkat-jungkit bersama teman, jungkat-jungkit akan seimbang dan rata hanya jika berat di kedua sisi <strong>sama persis</strong>.
+                                <br><br>
+                                Jika sisi kiri ada anak anjing seberat 8kg, berapa berat yang harus ada di sisi kanan agar tetap seimbang?
+                            </p>
+                        </div>
+                    </div>
+                `
+            },
+            // Slide 9: Real-world Connection 3 (Nature)
+            {
+                section: "Hubungan Dunia Nyata",
+                title: "Cetak Biru Alam yang Indah",
+                subtitle: "Pertumbuhan spiral kerang",
+                icon: "🐚",
+                render: () => `
+                    <div class="text-center max-w-xl mx-auto space-y-3">
+                        <p class="text-sm text-gray-600 font-semibold">
+                            Banyak hal di alam yang tumbuh dengan pola aljabar yang dapat diprediksi. Bunga matahari, pinus, dan kerang laut mengikuti aturan matematika untuk menambah bagian baru saat mereka tumbuh besar.
+                        </p>
+                        <div class="bg-emerald-50 border border-emerald-200 p-4 rounded-xl text-xs font-semibold text-emerald-900 leading-relaxed">
+                            🌻 <strong>Aljabar membantu kita:</strong> memprediksi bagaimana tanaman tumbuh, merancang bangunan yang kokoh, dan bahkan membuat program game yang kamu sukai!
+                        </div>
+                    </div>
+                `
+            },
+            // Slide 10: Concept 1: Repeating & Growing
+            {
+                section: "Konsep & Ide",
+                title: "Dua Jenis Pola",
+                subtitle: "Pola Berulang vs. Pola Tumbuh",
+                icon: "🎨",
+                render: () => `
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div class="bg-[#EFF6FF] border border-blue-200 p-4 rounded-2xl">
+                            <h4 class="font-bold text-[#1E40AF] text-sm mb-2">1. Pola Berulang (Repeating Patterns)</h4>
+                            <p class="text-xs text-gray-600 leading-relaxed">
+                                Pola ini melakukan hal yang sama berulang-ulang.
+                                <br><br>
+                                🍏 🍊 🍏 🍊 🍏 🍊 ...
+                            </p>
+                        </div>
+                        <div class="bg-[#F0FDF4] border border-emerald-200 p-4 rounded-2xl">
+                            <h4 class="font-bold text-emerald-800 text-sm mb-2">2. Pola Tumbuh (Growing Patterns)</h4>
+                            <p class="text-xs text-gray-600 leading-relaxed">
+                                Pola ini menjadi lebih besar atau lebih kecil dengan aturan yang jelas.
+                                <br><br>
+                                ⭐ ➔ ⭐⭐ ➔ ⭐⭐⭐ ➔ ...
+                            </p>
+                        </div>
+                    </div>
+                `
+            },
+            // Slide 11: Concept 2: Visual Growing Patterns
+            {
+                section: "Konsep & Ide",
+                title: "Membaca Pertumbuhan Visual",
+                subtitle: "Mari kita hitung dan prediksi!",
+                icon: "🧱",
+                render: () => `
+                    <div class="text-center space-y-3">
+                        <p class="text-sm font-semibold text-gray-600">Lihat bagaimana balok-balok ini tumbuh di setiap langkah:</p>
+                        <div class="flex justify-center items-end gap-6 mb-3">
+                            <div class="text-center">
+                                <div class="w-8 h-8 bg-purple-300 rounded border border-purple-500 mx-auto"></div>
+                                <span class="text-xs font-bold text-purple-700 block mt-1">Langkah 1: 1 balok</span>
+                            </div>
+                            <div class="text-center">
+                                <div class="w-8 h-16 bg-purple-300 rounded border border-purple-500 mx-auto flex flex-col justify-end"></div>
+                                <span class="text-xs font-bold text-purple-700 block mt-1">Langkah 2: 2 balok</span>
+                            </div>
+                            <div class="text-center">
+                                <div class="w-8 h-24 bg-purple-300 rounded border border-purple-500 mx-auto flex flex-col justify-end"></div>
+                                <span class="text-xs font-bold text-purple-700 block mt-1">Langkah 3: 3 balok</span>
+                            </div>
+                        </div>
+                        <p class="text-xs text-gray-500 italic">"Aturannya sederhana: Tambahkan 1 balok untuk setiap langkah baru!"</p>
+                    </div>
+                `
+            },
+            // Slide 12: Concept 3: Mystery Box
+            {
+                section: "Konsep & Ide",
+                title: "Berkenalan dengan Kotak Misteri",
+                subtitle: "Ruang kosong yang menunggu sebuah angka",
+                icon: "📦",
+                render: () => `
+                    <div class="space-y-4 max-w-xl mx-auto">
+                        <p class="text-sm text-gray-600 leading-relaxed font-semibold">
+                            Ketika kita belum mengetahui sebuah angka, kita bisa menggambar kotak, lingkaran, atau tanda tanya untuk menahan posisinya sementara.
+                        </p>
+                        <div class="bg-amber-50 border-2 border-amber-300 rounded-2xl p-4 text-center">
+                            <p class="text-lg font-black text-amber-900">
+                                $\\square + 4 = 10$
+                            </p>
+                            <p class="text-xs text-gray-500 mt-2">Angka berapa yang harus masuk ke dalam kotak? Jawabannya 6!</p>
+                        </div>
+                    </div>
+                `
+            },
+            // Slide 13: Concept 4: Variables
+            {
+                section: "Konsep & Ide",
+                title: "Mengubah Kotak Menjadi Huruf",
+                subtitle: "Mengapa kita menggunakan huruf seperti $x$ dan $y$",
+                icon: "🔤",
+                render: () => `
+                    <div class="grid md:grid-cols-2 gap-4 items-center">
+                        <div class="bg-[#EFF6FF] border border-blue-200 p-4 rounded-xl">
+                            <p class="text-xs text-gray-600 leading-relaxed font-semibold">
+                                Menggambar kotak membutuhkan waktu lama, dan semuanya terlihat sama!
+                                <br><br>
+                                Sebagai gantinya, matematikawan menggunakan huruf. Kita menyebut huruf-huruf ini sebagai <strong>variabel</strong> karena nilainya bisa berubah-ubah!
+                            </p>
+                        </div>
+                        <div class="bg-white p-4 rounded-xl border border-gray-200 text-center space-y-2">
+                            <span class="text-sm font-bold text-gray-500 block">Gaya Kotak:</span>
+                            <span class="text-base font-black text-red-500 font-mono">$\\square + 3 = 10$</span>
+                            <span class="text-sm font-bold text-gray-500 block">Gaya Aljabar Pintar:</span>
+                            <span class="text-lg font-black text-emerald-600 font-mono">$x + 3 = 10$</span>
+                        </div>
+                    </div>
+                `
+            },
+            // Slide 14: Concept 5: Equations
+            {
+                section: "Konsep & Ide",
+                title: "Apa itu Persamaan?",
+                subtitle: "Kalimat matematika dengan tanda sama dengan",
+                icon: "⚖️",
+                render: () => `
+                    <div class="text-center max-w-xl mx-auto space-y-3">
+                        <p class="text-sm text-gray-600 font-semibold">
+                            Sebuah <strong>persamaan</strong> itu seperti timbangan. Sisi kiri dan sisi kanan HARUS memiliki total nilai yang sama.
+                        </p>
+                        <div class="bg-blue-50 border-2 border-blue-300 p-4 rounded-2xl">
+                            <span class="text-lg font-bold text-blue-900 font-mono">$Sisi \\; Kiri = Sisi \\; Kanan$</span>
+                        </div>
+                        <p class="text-xs text-gray-500">Tanda sama dengan ($=$) bertindak sebagai titik keseimbangan yang sempurna di tengah!</p>
+                    </div>
+                `
+            },
+            // Slide 15: Interactive Scales Simulator
+            {
+                section: "Eksplorasi",
+                title: "Timbangan Keseimbangan Interaktif",
+                subtitle: "Sesuaikan berat untuk menemukan keseimbangan!",
+                icon: "⚖️",
+                render: () => `
+                    <div class="grid md:grid-cols-2 gap-4 items-center">
+                        <div class="space-y-4 bg-gray-50 p-4 rounded-xl border">
+                            <p class="text-xs text-gray-500 font-bold">Gunakan slider untuk menyeimbangkan timbangan!</p>
+                            <div>
+                                <label class="text-xs font-bold text-gray-600 block">Sisi Kiri: <span id="scale-l-val" class="text-pink-600 font-extrabold">5</span></label>
+                                <input type="range" id="scale-l-slider" min="1" max="10" step="1" value="5" oninput="updateScales()" class="w-full accent-pink-500">
+                            </div>
+                            <div>
+                                <label class="text-xs font-bold text-gray-600 block">Sisi Kanan: <span id="scale-r-val" class="text-blue-600 font-extrabold">5</span></label>
+                                <input type="range" id="scale-r-slider" min="1" max="10" step="1" value="5" oninput="updateScales()" class="w-full accent-blue-500">
+                            </div>
+                            <div class="bg-white p-2.5 rounded border text-xs text-center">
+                                <span class="font-bold text-gray-700">Status:</span>
+                                <span id="scale-status" class="font-bold text-emerald-600 block">Seimbang Sempurna! 🎉</span>
+                            </div>
+                        </div>
+                        <div class="flex flex-col items-center">
+                            <svg id="scale-svg" class="w-44 h-44 bg-white border rounded-xl" viewBox="0 0 100 100">
+                                <!-- Pivot -->
+                                <polygon points="50,55 45,85 55,85" fill="#B0BEC5"/>
+                                <!-- Crossbar (rotates based on weights) -->
+                                <line id="scale-beam" x1="15" y1="55" x2="85" y2="55" stroke="#37474F" stroke-width="4" stroke-linecap="round"/>
+                                <!-- Scales left & right -->
+                                <circle id="scale-plate-l" cx="15" cy="55" r="5" fill="#EC4899"/>
+                                <circle id="scale-plate-r" cx="85" cy="55" r="5" fill="#3B82F6"/>
+                            </svg>
+                        </div>
+                    </div>
+                `
+            },
+            // Slide 16: Concept 6: The Golden Rule
+            {
+                section: "Konsep & Ide",
+                title: "Aturan Emas Keseimbangan",
+                subtitle: "Apa pun yang kamu lakukan di satu sisi, lakukan juga di sisi lain!",
+                icon: "🌟",
+                render: () => `
+                    <div class="space-y-3 max-w-xl mx-auto text-xs md:text-sm">
+                        <p class="font-semibold text-gray-600">Untuk menyelesaikan persamaan, kita ingin hurufnya berdiri sendiri. Agar tetap seimbang:</p>
+                        <div class="bg-[#EFF6FF] p-3 rounded-lg border border-blue-200">
+                            ➕ Jika kamu <strong>menambahkan</strong> 2 di sisi kiri, kamu harus <strong>menambahkan</strong> 2 di sisi kanan!
+                        </div>
+                        <div class="bg-[#F0FDF4] p-3 rounded-lg border border-emerald-200">
+                            ➖ Jika kamu <strong>mengurangi</strong> 3 di sisi kiri, kamu harus <strong>mengurangi</strong> 3 di sisi kanan!
+                        </div>
+                    </div>
+                `
+            },
+            // Slide 17: Concept 7: Addition Equations
+            {
+                section: "Konsep & Ide",
+                title: "Menyelesaikan Persamaan Penjumlahan",
+                subtitle: "Menggunakan pengurangan untuk membatalkan penjumlahan",
+                icon: "➕",
+                render: () => `
+                    <div class="space-y-2 text-xs md:text-sm max-w-xl mx-auto">
+                        <p class="font-bold text-gray-700">Soal: $x + 3 = 8$</p>
+                        <p class="text-gray-500">Bagaimana cara membuat $x$ berdiri sendiri? Kita kurangi 3 dari kedua sisi!</p>
+                        <div class="bg-amber-50 p-3 rounded-xl border font-mono">
+                            $$x + 3 - 3 = 8 - 3$$
+                            $$x = 5$$
+                        </div>
+                        <p class="text-[11px] text-gray-400 italic">"Pengurangan adalah kebalikan dari penjumlahan. Ini membatalkan penjumlahan!"</p>
+                    </div>
+                `
+            },
+            // Slide 18: Concept 8: Subtraction Equations
+            {
+                section: "Konsep & Ide",
+                title: "Menyelesaikan Persamaan Pengurangan",
+                subtitle: "Menggunakan penjumlahan untuk membatalkan pengurangan",
+                icon: "➖",
+                render: () => `
+                    <div class="space-y-2 text-xs md:text-sm max-w-xl mx-auto">
+                        <p class="font-bold text-gray-700">Soal: $y - 2 = 7$</p>
+                        <p class="text-gray-500">Bagaimana cara membatalkan pengurangan 2? Kita tambahkan 2 ke kedua sisi!</p>
+                        <div class="bg-blue-50 p-3 rounded-xl border font-mono">
+                            $$y - 2 + 2 = 7 + 2$$
+                            $$y = 9$$
+                        </div>
+                    </div>
+                `
+            },
+            // Slide 19: Concept 9: Multiplication Ideas
+            {
+                section: "Konsep & Ide",
+                title: "Menyelesaikan Persamaan Perkalian",
+                subtitle: "Membagi menjadi kelompok-kelompok yang sama",
+                icon: "✖️",
+                render: () => `
+                    <div class="space-y-2 text-xs md:text-sm max-w-xl mx-auto">
+                        <p class="font-bold text-gray-700">Soal: $3 \\times p = 12$ (atau $3p = 12$)</p>
+                        <p class="text-gray-500">Ini berarti 3 kelompok $p$ yang sama bernilai 12. Bagaimana kita mencari nilai 1 kelompok?</p>
+                        <div class="bg-emerald-50 p-3 rounded-xl border font-mono">
+                            Bagi kedua sisi dengan 3!
+                            $$p = \\frac{12}{3}$$
+                            $$p = 4$$
+                        </div>
+                    </div>
+                `
+            },
+            // Slide 20: Concept 10: Words to Code
+            {
+                section: "Konsep & Ide",
+                title: "Kamus Kode Aljabar",
+                subtitle: "Menerjemahkan kata menjadi simbol matematika aljabar",
+                icon: "📖",
+                render: () => `
+                    <div class="grid grid-cols-2 gap-3 max-w-xl mx-auto text-xs font-semibold">
+                        <div class="bg-amber-50 border-l-4 border-amber-500 p-2.5 rounded">
+                            <span>"lebih dari" / "jumlah"</span>
+                            <span class="text-amber-800 block text-sm font-bold">➔ Tambah ($+$)</span>
+                        </div>
+                        <div class="bg-blue-50 border-l-4 border-blue-500 p-2.5 rounded">
+                            <span>"kurang dari" / "selisih"</span>
+                            <span class="text-blue-800 block text-sm font-bold">➔ Kurang ($-$)</span>
+                        </div>
+                        <div class="bg-emerald-50 border-l-4 border-emerald-500 p-2.5 rounded">
+                            <span>"kali" / "kelompok dari"</span>
+                            <span class="text-emerald-800 block text-sm font-bold">➔ Kali ($\\times$)</span>
+                        </div>
+                        <div class="bg-purple-50 border-l-4 border-purple-500 p-2.5 rounded">
+                            <span>"dibagi" / "dibagikan ke"</span>
+                            <span class="text-purple-800 block text-sm font-bold">➔ Bagi ($/$)</span>
+                        </div>
+                    </div>
+                `
+            },
+            // --- 5 CALCULATION QUESTIONS ---
+            // Slide 21: Calculation 1
+            {
+                section: "Latihan Soal",
+                title: "Misi 1: Kunci yang Hilang",
+                subtitle: "Temukan angka yang tersembunyi",
+                icon: "🏆",
+                render: () => `
+                    <div class="text-center">
+                        <p class="text-sm font-bold text-gray-600 mb-4">Selesaikan untuk $x$:<br><strong class="text-emerald-600 font-mono text-lg">$x + 7 = 12$</strong></p>
+                        <div class="grid grid-cols-3 gap-2 max-w-sm mx-auto">
+                            <button onclick="checkSlideAnswer(this, false, 'Coba kurangi 7 dari 12!', 10)" class="bg-[#F3F4F6] hover:bg-gray-100 p-3 rounded-xl border text-xs font-bold font-mono">x = 4</button>
+                            <button onclick="checkSlideAnswer(this, true, 'Luar biasa! $5 + 7 = 12$.', 10)" class="bg-[#F3F4F6] hover:bg-gray-100 p-3 rounded-xl border text-xs font-bold font-mono">x = 5</button>
+                            <button onclick="checkSlideAnswer(this, false, 'Periksa kembali penjumlahanmu.', 10)" class="bg-[#F3F4F6] hover:bg-gray-100 p-3 rounded-xl border text-xs font-bold font-mono">x = 19</button>
+                        </div>
+                    </div>
+                `
+            },
+            // Slide 22: Calculation 2
+            {
+                section: "Latihan Soal",
+                title: "Misi 2: Balikkan Pengurangan",
+                subtitle: "Bekerja mundur untuk menemukan y",
+                icon: "🏆",
+                render: () => `
+                    <div class="text-center">
+                        <p class="text-sm font-bold text-gray-600 mb-4">Selesaikan untuk $y$:<br><strong class="text-blue-600 font-mono text-lg">$y - 5 = 9$</strong></p>
+                        <div class="grid grid-cols-3 gap-2 max-w-sm mx-auto">
+                            <button onclick="checkSlideAnswer(this, true, 'Hebat! $14 - 5 = 9$.', 10)" class="bg-[#F3F4F6] hover:bg-gray-100 p-3 rounded-xl border text-xs font-bold font-mono">y = 14</button>
+                            <button onclick="checkSlideAnswer(this, false, 'Apakah kamu malah mengurangi, bukannya menambah?', 10)" class="bg-[#F3F4F6] hover:bg-gray-100 p-3 rounded-xl border text-xs font-bold font-mono">y = 4</button>
+                            <button onclick="checkSlideAnswer(this, false, 'Coba tambahkan 5 ke 9.', 10)" class="bg-[#F3F4F6] hover:bg-gray-100 p-3 rounded-xl border text-xs font-bold font-mono">y = 15</button>
+                        </div>
+                    </div>
+                `
+            },
+            // Slide 23: Calculation 3
+            {
+                section: "Latihan Soal",
+                title: "Misi 3: Pembagian Kelompok",
+                subtitle: "Membuka kunci pembagian",
+                icon: "🏆",
+                render: () => `
+                    <div class="text-center">
+                        <p class="text-sm font-bold text-gray-600 mb-4">Selesaikan untuk $p$:<br><strong class="text-purple-600 font-mono text-lg">$3p = 15$</strong></p>
+                        <div class="grid grid-cols-3 gap-2 max-w-sm mx-auto">
+                            <button onclick="checkSlideAnswer(this, false, 'Coba bagi 15 dengan 3.', 10)" class="bg-[#F3F4F6] hover:bg-gray-100 p-3 rounded-xl border text-xs font-bold font-mono">p = 3</button>
+                            <button onclick="checkSlideAnswer(this, true, 'Tepat sekali! $3 \\times 5 = 15$.', 10)" class="bg-[#F3F4F6] hover:bg-gray-100 p-3 rounded-xl border text-xs font-bold font-mono">p = 5</button>
+                            <button onclick="checkSlideAnswer(this, false, 'Itu terlalu tinggi!', 10)" class="bg-[#F3F4F6] hover:bg-gray-100 p-3 rounded-xl border text-xs font-bold font-mono">p = 12</button>
+                        </div>
+                    </div>
+                `
+            },
+            // Slide 24: Calculation 4
+            {
+                section: "Latihan Soal",
+                title: "Misi 4: Angka yang Lebih Besar",
+                subtitle: "Kepingan teka-teki yang lebih besar",
+                icon: "🏆",
+                render: () => `
+                    <div class="text-center">
+                        <p class="text-sm font-bold text-gray-600 mb-4">Selesaikan untuk $z$:<br><strong class="text-red-600 font-mono text-lg">$z + 12 = 30$</strong></p>
+                        <div class="grid grid-cols-3 gap-2 max-w-sm mx-auto">
+                            <button onclick="checkSlideAnswer(this, false, 'Pikirkan: berapa 30 dikurangi 12?', 10)" class="bg-[#F3F4F6] hover:bg-gray-100 p-3 rounded-xl border text-xs font-bold font-mono">z = 12</button>
+                            <button onclick="checkSlideAnswer(this, true, 'Luar biasa! $18 + 12 = 30$.', 10)" class="bg-[#F3F4F6] hover:bg-gray-100 p-3 rounded-xl border text-xs font-bold font-mono">z = 18</button>
+                            <button onclick="checkSlideAnswer(this, false, 'Kurang tepat.', 10)" class="bg-[#F3F4F6] hover:bg-gray-100 p-3 rounded-xl border text-xs font-bold font-mono">z = 42</button>
+                        </div>
+                    </div>
+                `
+            },
+            // Slide 25: Calculation 5
+            {
+                section: "Latihan Soal",
+                title: "Misi 5: Tantangan Dua Langkah",
+                subtitle: "Selesaikan langkah demi langkah",
+                icon: "🏆",
+                render: () => `
+                    <div class="text-center">
+                        <p class="text-sm font-bold text-gray-600 mb-4">Selesaikan untuk $k$:<br><strong class="text-amber-600 font-mono text-lg">$2k + 3 = 11$</strong></p>
+                        <div class="grid grid-cols-3 gap-2 max-w-sm mx-auto">
+                            <button onclick="checkSlideAnswer(this, true, 'Hebat sekali! Pertama kurangi 3 untuk mendapatkan $2k = 8$. Lalu bagi dengan 2 untuk mendapatkan $k = 4$.', 15)" class="bg-[#F3F4F6] hover:bg-gray-100 p-3 rounded-xl border text-xs font-bold font-mono">k = 4</button>
+                            <button onclick="checkSlideAnswer(this, false, 'Ingat untuk mengurangi 3 terlebih dahulu.', 10)" class="bg-[#F3F4F6] hover:bg-gray-100 p-3 rounded-xl border text-xs font-bold font-mono">k = 7</button>
+                            <button onclick="checkSlideAnswer(this, false, 'Coba kerjakan mundur langkah demi langkah.', 10)" class="bg-[#F3F4F6] hover:bg-gray-100 p-3 rounded-xl border text-xs font-bold font-mono">k = 8</button>
+                        </div>
+                    </div>
+                `
+            },
+            // --- 5 WORD PROBLEMS ---
+            // Slide 26: Word Problem 1
+            {
+                section: "Soal Cerita",
+                title: "Kotak Cokelat Misterius",
+                subtitle: "Situasi dunia nyata 1",
+                icon: "🍫",
+                render: () => `
+                    <div class="space-y-4 max-w-xl mx-auto">
+                        <div class="bg-blue-50 border border-blue-200 p-4 rounded-xl">
+                            <p class="text-sm font-bold text-blue-950">Kotak Cokelat:</p>
+                            <p class="text-xs text-gray-600 mt-1">Sam membeli sekotak cokelat berisi beberapa cokelat lezat di dalamnya ($c$). Dia memakan 3 cokelat. Sekarang tersisa 12 cokelat di dalam kotak. Berapa banyak cokelat yang ada di dalam kotak pada awalnya?</p>
+                        </div>
+                        <div class="flex justify-center gap-2">
+                            <button onclick="checkSlideAnswer(this, true, 'Sempurna! Persamaannya adalah $c - 3 = 12$, jadi $c = 15$ cokelat!', 15)" class="bg-white px-5 py-2.5 rounded-xl border font-bold text-xs">15 cokelat</button>
+                            <button onclick="checkSlideAnswer(this, false, 'Jika awalnya ada 9, memakan 3 akan menyisakan 6!', 10)" class="bg-white px-5 py-2.5 rounded-xl border font-bold text-xs">9 cokelat</button>
+                        </div>
+                    </div>
+                `
+            },
+            // Slide 27: Word Problem 2
+            {
+                section: "Soal Cerita",
+                title: "Kantong Kelereng Lila",
+                subtitle: "Situasi dunia nyata 2",
+                icon: "🔮",
+                render: () => `
+                    <div class="space-y-4 max-w-xl mx-auto">
+                        <div class="bg-emerald-50 border border-emerald-200 p-4 rounded-xl">
+                            <p class="text-sm font-bold text-emerald-950">Koleksi Kelereng:</p>
+                            <p class="text-xs text-gray-600 mt-1">Lila memiliki kantong berisi $m$ kelereng. Temannya memberinya 8 kelereng lagi. Sekarang dia memiliki total 20 kelereng. Persamaan mana yang cocok dengan cerita ini?</p>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <button onclick="checkSlideAnswer(this, true, 'Benar! $m$ kelereng ditambah 8 sama dengan total 20.', 15)" class="bg-white p-3 rounded-xl border font-bold text-xs font-mono">m + 8 = 20</button>
+                            <button onclick="checkSlideAnswer(this, false, 'Ini berarti kelereng Lila berkurang!', 10)" class="bg-white p-3 rounded-xl border font-bold text-xs font-mono">m - 8 = 20</button>
+                        </div>
+                    </div>
+                `
+            },
+            // Slide 28: Word Problem 3
+            {
+                section: "Soal Cerita",
+                title: "Berbagi Kue Ulang Tahun",
+                subtitle: "Situasi dunia nyata 3",
+                icon: "🎂",
+                render: () => `
+                    <div class="space-y-4 max-w-xl mx-auto">
+                        <div class="bg-purple-50 border border-purple-200 p-4 rounded-xl">
+                            <p class="text-sm font-bold text-purple-950">Potongan Kue:</p>
+                            <p class="text-xs text-gray-600 mt-1">Sebuah kue ulang tahun dipotong menjadi $s$ bagian yang sama besar. Jika 4 anak masing-masing memakan 2 bagian dan tidak ada kue yang tersisa, menjadi berapa bagian kue tersebut dipotong pada awalnya?</p>
+                        </div>
+                        <div class="flex justify-center gap-2">
+                            <button onclick="checkSlideAnswer(this, false, 'Pikirkan: 4 anak × 2 bagian masing-masing!', 10)" class="bg-white px-5 py-2.5 rounded-xl border font-bold text-xs">6 bagian</button>
+                            <button onclick="checkSlideAnswer(this, true, 'Luar biasa! $s / 4 = 2$ berarti $s = 8$ bagian secara keseluruhan!', 15)" class="bg-white px-5 py-2.5 rounded-xl border font-bold text-xs">8 bagian</button>
+                        </div>
+                    </div>
+                `
+            },
+            // Slide 29: Word Problem 4
+            {
+                section: "Soal Cerita",
+                title: "Tanaman yang Tumbuh",
+                subtitle: "Situasi dunia nyata 4",
+                icon: "🌱",
+                render: () => `
+                    <div class="space-y-4 max-w-xl mx-auto">
+                        <div class="bg-amber-50 border border-amber-200 p-4 rounded-xl">
+                            <p class="text-sm font-bold text-amber-950">Tinggi Tanaman:</p>
+                            <p class="text-xs text-gray-600 mt-1">Sebuah tanaman bunga matahari tumbuh 3 sentimeter setiap minggu. Tinggi awalnya adalah 10 cm. Tingginya setelah $w$ minggu adalah $10 + 3w$. Berapa tinggi bunga matahari setelah 4 minggu?</p>
+                        </div>
+                        <div class="flex justify-center gap-2">
+                            <button onclick="checkSlideAnswer(this, true, 'Hebat! $10 + 3 \\times 4 = 10 + 12 = 22$ cm!', 15)" class="bg-white px-5 py-2.5 rounded-xl border font-bold text-xs">22 cm</button>
+                            <button onclick="checkSlideAnswer(this, false, 'Ingat untuk mengalikan 3 dengan 4 minggu terlebih dahulu!', 10)" class="bg-white px-5 py-2.5 rounded-xl border font-bold text-xs">13 cm</button>
+                        </div>
+                    </div>
+                `
+            },
+            // Slide 30: Reflection & Learner Profile
+            {
+                section: "Refleksi & Kesimpulan",
+                title: "Merefleksikan Perjalanan Kita",
+                subtitle: "Tinjauan Profil Pelajar IB (IB Learner Profile)",
+                icon: "🌿",
+                render: () => `
+                    <div class="text-center max-w-xl mx-auto space-y-4">
+                        <p class="text-sm font-bold text-gray-600">Profil Pelajar IB mana yang paling banyak kamu gunakan hari ini?</p>
+                        <div class="grid grid-cols-3 gap-2">
+                            <button onclick="handleEmotionSelect(this, 'thinker')" class="bg-white hover:bg-emerald-50 border-2 border-emerald-200 p-3 rounded-2xl flex flex-col items-center active:scale-95 transition">
+                                <span class="text-3xl mb-1">🤔</span>
+                                <span class="text-[10px] font-bold text-gray-600">Pemikir (Thinker)</span>
+                            </button>
+                            <button onclick="handleEmotionSelect(this, 'inquirer')" class="bg-white hover:bg-amber-50 border-2 border-amber-200 p-3 rounded-2xl flex flex-col items-center active:scale-95 transition">
+                                <span class="text-3xl mb-1">🔍</span>
+                                <span class="text-[10px] font-bold text-gray-600">Penyelidik (Inquirer)</span>
+                            </button>
+                            <button onclick="handleEmotionSelect(this, 'reflective')" class="bg-white hover:bg-indigo-50 border-2 border-indigo-200 p-3 rounded-2xl flex flex-col items-center active:scale-95 transition">
+                                <span class="text-3xl mb-1">🌱</span>
+                                <span class="text-[10px] font-bold text-gray-600">Reflektif (Reflective)</span>
+                            </button>
+                        </div>
+                        <p id="reflection-text" class="text-xs font-bold text-[#FF8C00] min-h-[16px]"></p>
+                    </div>
+                `
+            }
+        ];
+
+        // --- 3. SYSTEM STATE ---
+        let currentSlide = 0;
+        let score = 0;
+
+        // Canvas Sketchpad Context
+        const canvas = document.getElementById('scratch-canvas');
+        const ctx = canvas.getContext('2d');
+        let isDrawing = false;
+
+        // Confetti Context
+        const confettiCanvas = document.getElementById('confetti');
+        const confettiCtx = confettiCanvas.getContext('2d');
+        let confettiActive = false;
+        let particles = [];
+
+        // --- 4. SYSTEM RUN ON LOAD ---
+        window.onload = function() {
+            loadSlide(0);
+            initCanvas();
+            setupTouchGestures();
+        };
+
+        // --- 5. RENDER SYSTEM WITH MATHJAX SUPPORT ---
+        function loadSlide(index) {
+            if (index < 0 || index >= slides.length) return;
+            currentSlide = index;
+
+            const slide = slides[currentSlide];
+            
+            const headerHtml = `
+                <div class="mb-5 border-b-2 border-gray-100 pb-3">
+                    <span class="text-xs font-black text-[#FF8C00] uppercase tracking-widest">${slide.section}</span>
+                    <h1 class="kids-heading text-2xl md:text-3xl font-extrabold text-slate-800 flex items-center gap-2 mt-1">
+                        <span>${slide.icon}</span> ${slide.title}
+                    </h1>
+                    <p class="text-xs text-gray-400 font-semibold italic">${slide.subtitle}</p>
+                </div>
+            `;
+            
+            document.getElementById('slide-content').innerHTML = headerHtml + slide.render();
+
+            // Progress tracking
+            const percent = ((currentSlide + 1) / slides.length) * 100;
+            document.getElementById('progress-bar').style.width = `${percent}%`;
+
+            // Footer info
+            document.getElementById('slide-index').innerText = `Slide ${currentSlide + 1} / ${slides.length}`;
+            document.getElementById('section-name').innerText = `Tahap Unit: ${slide.section}`;
+
+            // Arrow states
+            document.getElementById('prev-btn').style.opacity = currentSlide === 0 ? "0.3" : "1";
+            document.getElementById('next-btn').style.opacity = currentSlide === slides.length - 1 ? "0.3" : "1";
+
+            // Trigger simulator slide functions
+            if (currentSlide === 14) { 
+                setTimeout(updateScales, 100);
+            }
+
+            // Trigger MathJax re-render for perfect formatting
+            if (window.MathJax) {
+                MathJax.typesetPromise();
+            }
+        }
+
+        function changeSlide(direction) {
+            const nextIdx = currentSlide + direction;
+            if (nextIdx >= 0 && nextIdx < slides.length) {
+                playSound('click');
+                loadSlide(nextIdx);
+            }
+        }
+
+        // --- 6. USER INTERACTION & VALIDATION ---
+        function checkSlideAnswer(element, isCorrect, feedback, points = 10) {
+            const parent = element.parentNode;
+            Array.from(parent.children).forEach(btn => {
+                btn.classList.remove('border-emerald-500', 'bg-emerald-50', 'border-red-400', 'bg-red-50');
+            });
+
+            if (isCorrect) {
+                element.classList.add('border-emerald-500', 'bg-emerald-50');
+                playSound('correct');
+                showToast("✨ " + feedback, "bg-[#4CAF50]");
+                score += points;
+                document.getElementById('xp-display').innerText = `${score} XP`;
+                triggerConfetti();
+            } else {
+                element.classList.add('border-red-400', 'bg-red-50');
+                playSound('incorrect');
+                showToast("❌ " + feedback, "bg-red-500");
+            }
+        }
+
+        function handleEmotionSelect(element, profile) {
+            const parent = element.parentNode;
+            Array.from(parent.children).forEach(btn => {
+                btn.classList.remove('ring-4', 'ring-[#FF8C00]', 'scale-105');
+            });
+            element.classList.add('ring-4', 'ring-[#FF8C00]', 'scale-105');
+            
+            const feedbackText = document.getElementById('reflection-text');
+            if (profile === 'thinker') {
+                feedbackText.innerText = "Luar biasa! Kamu menggunakan logika untuk menyeimbangkan timbangan dan mencari tahu nilai yang tidak diketahui! 💭";
+                playSound('correct');
+                triggerConfetti();
+            } else if (profile === 'inquirer') {
+                feedbackText.innerText = "Hebat! Kamu menyelidiki bagaimana balok visual dan angka tumbuh langkah demi langkah! 🔍";
+                playSound('correct');
+                triggerConfetti();
+            } else {
+                feedbackText.innerText = "Tepat sekali! Kamu merefleksikan kesalahanmu dan bekerja mundur untuk mendapatkan jawabannya! 🌱";
+                playSound('correct');
+                triggerConfetti();
+            }
+        }
+
+        function showToast(text, bgClass) {
+            const toast = document.getElementById('toast');
+            const toastText = document.getElementById('toast-text');
+            toast.className = `fixed bottom-12 left-1/2 transform -translate-x-1/2 z-50 text-white font-black px-6 py-3 rounded-2xl shadow-xl flex items-center gap-2 animate-bounce ${bgClass}`;
+            toastText.innerText = text;
+            toast.classList.remove('hidden');
+            setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 3000);
+        }
+
+        // --- 7. DYNAMIC SCALES SIMULATOR (SLIDE 15) ---
+        function updateScales() {
+            const leftVal = parseInt(document.getElementById('scale-l-slider').value);
+            const rightVal = parseInt(document.getElementById('scale-r-slider').value);
+
+            document.getElementById('scale-l-val').innerText = leftVal;
+            document.getElementById('scale-r-val').innerText = rightVal;
+
+            const beam = document.getElementById('scale-beam');
+            const plateL = document.getElementById('scale-plate-l');
+            const plateY = document.getElementById('scale-plate-r');
+            const statusText = document.getElementById('scale-status');
+
+            // Calculate rotation angle based on weight difference
+            let angle = (leftVal - rightVal) * 3; 
+            if (angle > 15) angle = 15;
+            if (angle < -15) angle = -15;
+
+            // Apply SVG transforms for visual tilt
+            beam.setAttribute('transform', `rotate(${angle}, 50, 55)`);
+
+            // Reposition the hanging weight plates
+            const rad = angle * Math.PI / 180;
+            const leftX = 50 - 35 * Math.cos(rad);
+            const leftY = 55 - 35 * Math.sin(rad);
+            const rightX = 50 + 35 * Math.cos(rad);
+            const rightY = 55 + 35 * Math.sin(rad);
+
+            document.getElementById('scale-plate-l').setAttribute('cx', leftX);
+            document.getElementById('scale-plate-l').setAttribute('cy', leftY);
+            document.getElementById('scale-plate-r').setAttribute('cx', rightX);
+            document.getElementById('scale-plate-r').setAttribute('cy', rightY);
+
+            // Update status text feedback
+            if (leftVal === rightVal) {
+                statusText.innerText = "Seimbang Sempurna! 🎉";
+                statusText.className = "font-bold text-emerald-600 block";
+            } else if (leftVal > rightVal) {
+                statusText.innerText = "Sisi kiri lebih berat! ⚖️";
+                statusText.className = "font-bold text-pink-600 block";
+            } else {
+                statusText.innerText = "Sisi kanan lebih berat! ⚖️";
+                statusText.className = "font-bold text-blue-600 block";
+            }
+        }
+
+        // --- 8. DOODLE CANVAS SYSTEM ---
+        function toggleScratchpad() {
+            const pad = document.getElementById('scratchpad');
+            pad.classList.toggle('hidden');
+            if (!pad.classList.contains('hidden')) {
+                resizeCanvas();
+            }
+        }
+
+        // Drawing in sketchpad
+        function initCanvas() {
+            canvas.addEventListener('mousedown', (e) => {
+                isDrawing = true;
+                ctx.beginPath();
+                const r = canvas.getBoundingClientRect();
+                ctx.moveTo(e.clientX - r.left, e.clientY - r.top);
+            });
+            canvas.addEventListener('mousemove', (e) => {
+                if (!isDrawing) return;
+                const r = canvas.getBoundingClientRect();
+                ctx.lineTo(e.clientX - r.left, e.clientY - r.top);
+                ctx.stroke();
+            });
+            canvas.addEventListener('mouseup', () => isDrawing = false);
+
+            // Touch support for portable learning devices
+            canvas.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                isDrawing = true;
+                ctx.beginPath();
+                const t = e.touches[0];
+                const r = canvas.getBoundingClientRect();
+                ctx.moveTo(t.clientX - r.left, t.clientY - r.top);
+            });
+            canvas.addEventListener('touchmove', (e) => {
+                e.preventDefault();
+                if (!isDrawing) return;
+                const t = e.touches[0];
+                const r = canvas.getBoundingClientRect();
+                ctx.lineTo(t.clientX - r.left, t.clientY - r.top);
+                ctx.stroke();
+            });
+            canvas.addEventListener('touchend', () => isDrawing = false);
+        }
+
+        function resizeCanvas() {
+            const parent = canvas.parentNode;
+            canvas.width = parent.clientWidth;
+            canvas.height = parent.clientHeight;
+            ctx.lineCap = 'round';
+            ctx.lineWidth = 4;
+            ctx.strokeStyle = '#00838F'; 
+        }
+
+        function clearCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+
+        // --- 9. SWIPE GESTURES ---
+        let startX = 0;
+        function setupTouchGestures() {
+            const wrapper = document.getElementById('slide-wrapper');
+            wrapper.addEventListener('touchstart', (e) => {
+                startX = e.changedTouches[0].screenX;
+            }, false);
+
+            wrapper.addEventListener('touchend', (e) => {
+                const endX = e.changedTouches[0].screenX;
+                const threshold = 60;
+                if (startX - endX > threshold) {
+                    changeSlide(1); 
+                } else if (endX - startX > threshold) {
+                    changeSlide(-1); 
+                }
+            }, false);
+        }
+
+        // --- 10. CONFETTI CELEBRATION EFFECTS ---
+        function triggerConfetti() {
+            confettiActive = true;
+            confettiCanvas.classList.remove('hidden');
+            confettiCanvas.width = window.innerWidth;
+            confettiCanvas.height = window.innerHeight;
+            
+            particles = [];
+            for (let i = 0; i < 70; i++) {
+                particles.push({
+                    x: Math.random() * confettiCanvas.width,
+                    y: Math.random() * confettiCanvas.height - confettiCanvas.height,
+                    r: Math.random() * 5 + 4,
+                    d: Math.random() * confettiCanvas.height,
+                    color: `hsl(${Math.random() * 360}, 100%, 70%)`,
+                    tilt: Math.random() * 10 - 5,
+                    tiltAngleIncremental: Math.random() * 0.07 + 0.02,
+                    tiltAngle: 0
+                });
+            }
+
+            animateConfetti();
+            setTimeout(() => {
+                confettiActive = false;
+                confettiCanvas.classList.add('hidden');
+            }, 2500);
+        }
+
+        function animateConfetti() {
+            if (!confettiActive) return;
+            confettiCtx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+            
+            particles.forEach((p, idx) => {
+                p.tiltAngle += p.tiltAngleIncremental;
+                p.y += (Math.cos(p.d) + 3 + p.r / 2) / 2;
+                p.x += Math.sin(p.tiltAngle);
+                p.tilt = Math.sin(p.tiltAngle - idx / 3) * 15;
+
+                confettiCtx.beginPath();
+                confettiCtx.lineWidth = p.r;
+                confettiCtx.strokeStyle = p.color;
+                confettiCtx.moveTo(p.x + p.tilt + p.r / 2, p.y);
+                confettiCtx.lineTo(p.x + p.tilt, p.y + p.tilt + p.r / 2);
+                confettiCtx.stroke();
+            });
+
+            requestAnimationFrame(animateConfetti);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Petualangan Aljabar PYP 4</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts - Fredoka & Quicksand -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&family=Quicksand:wght@400..700&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: 'Quicksand', sans-serif;
+      background-color: #F0F4F8;
+    }
+    h1, h2, h3, .title-font {
+      font-family: 'Fredoka', sans-serif;
+    }
+    .pastel-pink { background-color: #FFF0F5; }
+    .pastel-blue { background-color: #E6F2FF; }
+    .pastel-green { background-color: #E8F8F5; }
+    .pastel-yellow { background-color: #FEF9E7; }
+    .pastel-purple { background-color: #F5EEF8; }
+    
+    /* Scale Animations */
+    .scale-arm {
+      transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      transform-origin: 150px 100px;
+    }
+    .scale-pan-left {
+      transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      transform-origin: 60px 100px;
+    }
+    .scale-pan-right {
+      transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      transform-origin: 240px 100px;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between overflow-x-hidden text-gray-800">
+
+  <!-- Header & Navigasi -->
+  <header class="bg-white shadow-sm border-b border-gray-100 py-4 px-6 sticky top-0 z-40">
+    <div class="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <!-- Logo Mascot Animasi -->
+        <svg class="w-10 h-10 text-amber-400 animate-bounce" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H7c0-2.76 2.24-5 5-5s5 2.24 5 5c0 1.04-.42 1.99-1.07 2.75z"/>
+        </svg>
+        <div>
+          <h1 class="text-2xl font-bold text-indigo-600 tracking-wide">Petualangan Aljabar!</h1>
+          <p class="text-xs text-gray-500 font-medium">Kurikulum IB PYP • Matematika Kelas 4 Sekolah Dasar</p>
+        </div>
+      </div>
+
+      <!-- Skor & Progress Bar -->
+      <div class="flex items-center gap-4 w-full sm:w-auto justify-end">
+        <div class="text-right">
+          <span class="text-xs text-gray-400 font-bold block uppercase tracking-wider">Kemajuan</span>
+          <span id="progress-text" class="text-lg font-black text-indigo-500">Soal 1 / 15</span>
+        </div>
+        <div class="w-24 sm:w-40 bg-gray-200 h-3 rounded-full overflow-hidden">
+          <div id="progress-bar-fill" class="bg-emerald-400 h-full rounded-full transition-all duration-300" style="width: 6.67%"></div>
+        </div>
+        <div class="bg-amber-100 text-amber-700 px-3 py-1.5 rounded-full font-bold flex items-center gap-1">
+          <span>🌟</span>
+          <span id="live-score">0</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Tata Letak Konten Utama -->
+  <main class="max-w-6xl w-full mx-auto p-4 sm:p-6 flex-grow grid grid-cols-1 lg:grid-cols-12 gap-6">
+    
+    <!-- Kolom Kiri: Panel Kuis, Timbangan, Pilihan Jawaban (8 Kolom) -->
+    <div class="lg:col-span-8 flex flex-col gap-6">
+      
+      <!-- Box Lab Timbangan Interaktif (Muncul hanya pada soal bertipe persamaan timbangan) -->
+      <div id="simulator-container" class="bg-white rounded-3xl p-6 shadow-md border-4 border-dashed border-indigo-100 relative transition-all">
+        <div class="flex justify-between items-center mb-4">
+          <h3 class="text-base font-bold text-indigo-500 flex items-center gap-2">
+            ⚖️ Lab Timbangan Matematika
+          </h3>
+          <span class="text-xs text-gray-400 bg-gray-100 px-2.5 py-1 rounded-full hidden sm:inline">Gunakan tombol penambah beban untuk membantu menyeimbangkan timbangan!</span>
+        </div>
+        
+        <div class="flex flex-col items-center justify-center py-4">
+          <!-- Gambar SVG Timbangan Dinamis -->
+          <svg id="balance-scale-svg" class="w-full max-w-[320px] h-[180px]" viewBox="0 0 300 200">
+            <!-- Tiang Utama Timbangan -->
+            <path d="M140 100 L160 100 L170 190 L130 190 Z" fill="#D5D8DC" />
+            <path d="M110 190 L190 190 L180 198 L120 198 Z" fill="#95A5A6" />
+            <!-- Sendi Engsel Tengah -->
+            <circle cx="150" cy="100" r="12" fill="#E67E22" />
+            <circle cx="150" cy="100" r="6" fill="#F39C12" />
+            
+            <!-- Lengan & Piring Timbangan (Digerakkan dengan JavaScript) -->
+            <g id="scale-arm-group" class="scale-arm">
+              <!-- Batang Mendatar -->
+              <line x1="50" y1="100" x2="250" y2="100" stroke="#7F8C8D" stroke-width="8" stroke-linecap="round" />
+              
+              <!-- Piring Sebelah Kiri -->
+              <g id="scale-pan-left-group" class="scale-pan-left">
+                <!-- Tali Kiri -->
+                <line x1="60" y1="100" x2="30" y2="140" stroke="#95A5A6" stroke-width="2" />
+                <line x1="60" y1="100" x2="90" y2="140" stroke="#95A5A6" stroke-width="2" />
+                <!-- Wadah piring kiri -->
+                <path d="M20 140 L100 140 A 40 40 0 0 0 60 180 A 40 40 0 0 0 20 140 Z" fill="#F1C40F" />
+                <!-- Teks beban kiri -->
+                <text id="txt-left-weight" x="60" y="130" text-anchor="middle" font-family="'Fredoka'" font-weight="bold" fill="#2C3E50" font-size="14">Kiri</text>
+                <text id="visual-left-items" x="60" y="160" text-anchor="middle" font-size="20">📦</text>
+              </g>
+              
+              <!-- Piring Sebelah Kanan -->
+              <g id="scale-pan-right-group" class="scale-pan-right">
+                <!-- Tali Kanan -->
+                <line x1="240" y1="100" x2="210" y2="140" stroke="#95A5A6" stroke-width="2" />
+                <line x1="240" y1="100" x2="270" y2="140" stroke="#95A5A6" stroke-width="2" />
+                <!-- Wadah piring kanan -->
+                <path d="M200 140 L280 140 A 40 40 0 0 0 240 180 A 40 40 0 0 0 200 140 Z" fill="#F1C40F" />
+                <!-- Teks beban kanan -->
+                <text id="txt-right-weight" x="240" y="130" text-anchor="middle" font-family="'Fredoka'" font-weight="bold" fill="#2C3E50" font-size="14">Kanan</text>
+                <text id="visual-right-items" x="240" y="160" text-anchor="middle" font-size="20">⭐</text>
+              </g>
+            </g>
+          </svg>
+
+          <!-- Pengatur Beban Timbangan Interaktif -->
+          <div class="flex flex-col sm:flex-row gap-4 mt-4 justify-center items-center w-full">
+            <div class="flex flex-col items-center bg-sky-50 p-2.5 rounded-2xl border border-sky-100">
+              <span class="text-xs font-bold text-sky-700 mb-1">Tambah Sisi Kiri</span>
+              <div class="flex gap-1.5">
+                <button onclick="changeWeight('left', -1)" class="bg-white hover:bg-sky-100 text-sky-600 font-black px-3 py-1.5 rounded-lg border border-sky-200 shadow-sm">-1</button>
+                <button onclick="changeWeight('left', 1)" class="bg-emerald-400 hover:bg-emerald-500 text-white font-black px-3 py-1.5 rounded-lg shadow-sm">+1</button>
+              </div>
+            </div>
+
+            <div id="balance-indicator" class="px-4 py-2 rounded-2xl font-black text-sm bg-amber-100 text-amber-700 animate-pulse">
+              Belum Seimbang!
+            </div>
+
+            <div class="flex flex-col items-center bg-sky-50 p-2.5 rounded-2xl border border-sky-100">
+              <span class="text-xs font-bold text-sky-700 mb-1">Tambah Sisi Kanan</span>
+              <div class="flex gap-1.5">
+                <button onclick="changeWeight('right', -1)" class="bg-white hover:bg-sky-100 text-sky-600 font-black px-3 py-1.5 rounded-lg border border-sky-200 shadow-sm">-1</button>
+                <button onclick="changeWeight('right', 1)" class="bg-emerald-400 hover:bg-emerald-500 text-white font-black px-3 py-1.5 rounded-lg shadow-sm">+1</button>
+              </div>
+            </div>
+          </div>
+          
+          <button onclick="resetCurrentScale()" class="mt-3 text-xs text-indigo-500 hover:text-indigo-600 underline font-semibold">Atur Ulang Timbangan</button>
+        </div>
+      </div>
+
+      <!-- Kotak Pertanyaan Kuis -->
+      <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-md border-b-8 border-indigo-200 flex flex-col gap-6">
+        <!-- Badge Konsep PYP -->
+        <div class="flex justify-between items-start gap-4">
+          <span id="pyp-concept-badge" class="bg-purple-100 text-purple-700 text-xs px-3 py-1.5 rounded-full font-bold uppercase tracking-wider">
+            Konsep Kunci: Hubungan & Pola
+          </span>
+          <button onclick="speakQuestion()" class="text-indigo-500 hover:text-indigo-600 p-2 rounded-full bg-indigo-50 hover:bg-indigo-100 transition-all flex items-center justify-center shadow-sm" title="Dengarkan Soal">
+            🔊 Baca Bersuara
+          </button>
+        </div>
+
+        <!-- Konten Teks Soal (Ditulis Biasa Tanpa LaTeX/Formula) -->
+        <div class="flex flex-col gap-4">
+          <h2 id="question-text" class="text-xl sm:text-2xl font-extrabold text-gray-800 leading-snug">
+            Memuat pertanyaan hebat untukmu...
+          </h2>
+        </div>
+
+        <!-- Kisi Pilihan Jawaban -->
+        <div id="answers-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-2">
+          <!-- Dirender secara dinamis dengan JS -->
+        </div>
+
+        <!-- Banner Umpan Balik Instan -->
+        <div id="feedback-banner" class="hidden rounded-2xl p-4 flex items-center justify-between gap-4 transition-all duration-300">
+          <div class="flex items-center gap-3">
+            <span id="feedback-icon" class="text-3xl">🎉</span>
+            <div>
+              <h4 id="feedback-title" class="font-bold text-lg">Luar Biasa!</h4>
+              <p id="feedback-rationale" class="text-sm opacity-90"></p>
+            </div>
+          </div>
+          <button id="btn-next" onclick="nextQuestion()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold px-6 py-3 rounded-xl shadow-md flex items-center gap-2 transform active:scale-95 transition-all text-sm whitespace-nowrap">
+            Soal Berikutnya ➡️
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Kolom Kanan: Papan Coret & Info Profil Pembelajar PYP (4 Kolom) -->
+    <div class="lg:col-span-4 flex flex-col gap-6">
+      
+      <!-- Papan Coret Digital (Scratchpad) -->
+      <div class="bg-white rounded-3xl p-6 shadow-md border-b-8 border-emerald-200 flex flex-col gap-4">
+        <div class="flex justify-between items-center">
+          <h3 class="text-lg font-bold text-emerald-600 flex items-center gap-2">
+            ✏️ Papan Coret Pintar
+          </h3>
+          <button onclick="clearScratchpad()" class="text-xs bg-rose-50 hover:bg-rose-100 text-rose-500 font-semibold px-2.5 py-1.5 rounded-lg border border-rose-200 transition-all">
+            Hapus Semua
+          </button>
+        </div>
+        <p class="text-xs text-gray-500">Gunakan jarimu atau tetikus (mouse) untuk menggambar dan menghitung di bawah ini!</p>
+        
+        <!-- Elemen Canvas -->
+        <div class="relative w-full bg-slate-50 rounded-2xl border border-gray-200 overflow-hidden" style="height: 220px;">
+          <canvas id="scratchpad" class="absolute inset-0 w-full h-full cursor-crosshair touch-none"></canvas>
+        </div>
+
+        <!-- Pilihan Warna Pena -->
+        <div class="flex justify-between items-center">
+          <div class="flex gap-2">
+            <button onclick="setPenColor('#10B981')" class="w-6 h-6 rounded-full bg-emerald-500 border-2 border-white ring-2 ring-emerald-300" title="Hijau"></button>
+            <button onclick="setPenColor('#3B82F6')" class="w-6 h-6 rounded-full bg-blue-500 border-2 border-white hover:ring-2 hover:ring-blue-300" title="Biru"></button>
+            <button onclick="setPenColor('#EC4899')" class="w-6 h-6 rounded-full bg-pink-500 border-2 border-white hover:ring-2 hover:ring-pink-300" title="Merah Muda"></button>
+            <button onclick="setPenColor('#111827')" class="w-6 h-6 rounded-full bg-gray-900 border-2 border-white hover:ring-2 hover:ring-gray-300" title="Hitam"></button>
+          </div>
+          <span class="text-xs text-emerald-600 font-bold bg-emerald-50 px-2 py-1 rounded">Aktif: Pena Digital</span>
+        </div>
+      </div>
+
+      <!-- Unit Penyelidikan IB PYP (UOI) Box -->
+      <div class="pastel-purple rounded-3xl p-6 border border-purple-200 flex flex-col gap-3">
+        <h3 class="font-black text-purple-800 text-base">ℹ️ Profil Pembelajar PYP</h3>
+        <p class="text-xs text-purple-900 leading-relaxed">
+          Dalam unit kami tentang <strong>"Pola dan Fungsi"</strong>, kita melatih diri menjadi seorang yang <em>Berpikir Kritis (Thinker)</em> dan <em>Reflektif</em> untuk memecahkan misteri matematika secara runtut!
+        </p>
+        <div class="bg-white/70 p-3 rounded-2xl text-[11px] text-purple-950 flex flex-col gap-1.5">
+          <div class="font-bold">🎯 Aturan Emas Aljabar:</div>
+          <div>Operasi apa pun yang kamu lakukan pada sisi kiri timbangan juga harus dilakukan pada sisi kanan agar timbangan tetap seimbang sempurna!</div>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- Modal Hasil Akhir -->
+  <div id="results-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-[36px] w-full max-w-xl p-8 text-center shadow-2xl border-4 border-indigo-100 flex flex-col items-center gap-6 animate-scaleIn">
+      <div class="text-6xl animate-bounce">🏆</div>
+      <div>
+        <h2 class="text-3xl font-black text-indigo-600 mb-2">Misi Selesai!</h2>
+        <p class="text-gray-500 font-semibold text-sm">Mari lihat pencapaian hebat dalam petualangan matematika kali ini!</p>
+      </div>
+
+      <!-- Kartu Skor & Penghargaan -->
+      <div class="grid grid-cols-2 gap-4 w-full my-2">
+        <div class="pastel-green p-4 rounded-3xl border border-emerald-100">
+          <span class="block text-xs text-gray-500 font-bold uppercase">Jawaban Benar</span>
+          <span id="final-correct" class="text-3xl font-black text-emerald-600">0</span>
+          <span class="text-xs text-gray-400 block mt-1">Dari 15 Pertanyaan</span>
+        </div>
+        <div class="pastel-blue p-4 rounded-3xl border border-blue-100">
+          <span class="block text-xs text-gray-500 font-bold uppercase">Skor Akhir</span>
+          <span id="final-score" class="text-3xl font-black text-blue-600">0</span>
+          <span class="text-xs text-gray-400 block mt-1">Poin Prestasi</span>
+        </div>
+      </div>
+
+      <!-- Refleksi Profil Pembelajar PYP -->
+      <div id="pyp-feedback-box" class="pastel-purple p-5 rounded-3xl border border-purple-100 text-left w-full">
+        <h4 class="font-bold text-purple-800 text-sm mb-1 flex items-center gap-1.5">
+          🧐 Refleksi Profil Pembelajar PYP:
+        </h4>
+        <p id="pyp-learner-profile-text" class="text-xs text-purple-950 leading-relaxed"></p>
+      </div>
+
+      <!-- Tombol Aksi -->
+      <div class="flex gap-4 w-full">
+        <button onclick="restartQuiz()" class="flex-1 bg-indigo-500 hover:bg-indigo-600 text-white font-extrabold py-3.5 rounded-2xl shadow-md hover:shadow-lg transition-all text-sm">
+          🔄 Main Lagi!
+        </button>
+        <button onclick="closeModal()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-3.5 rounded-2xl border border-slate-200 transition-all text-sm">
+          Tutup Laporan
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="bg-slate-100 border-t border-slate-200 py-4 text-center text-xs text-gray-400 font-semibold">
+    Dibuat dengan ❤️ untuk Masa Depan yang Cemerlang • Kurikulum IB Primary Years Programme (PYP)
+  </footer>
+
+  <!-- JS CONTROLLERS AND LOGIC -->
+  <script>
+    // Sintesis Suara menggunakan Web Audio API (Tanpa aset eksternal)
+    let audioCtx = null;
+    function initAudio() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+    }
+
+    function playTone(freq, type, duration, vol = 0.1) {
+      try {
+        initAudio();
+        if (audioCtx.state === 'suspended') {
+          audioCtx.resume();
+        }
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        
+        gain.gain.setValueAtTime(vol, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
+        
+        osc.start(audioCtx.currentTime);
+        osc.stop(audioCtx.currentTime + duration);
+      } catch (e) {
+        console.warn("Konteks Audio tidak didukung pada browser ini.");
+      }
+    }
+
+    // Efek Suara
+    function playSoundSuccess() {
+      playTone(523.25, 'sine', 0.15); // Nada C5
+      setTimeout(() => playTone(659.25, 'sine', 0.15), 100); // Nada E5
+      setTimeout(() => playTone(783.99, 'sine', 0.3), 200); // Nada G5
+    }
+
+    function playSoundError() {
+      playTone(220, 'triangle', 0.2, 0.15); // Nada A3
+      setTimeout(() => playTone(147, 'triangle', 0.4, 0.15), 120); // Nada D3
+    }
+
+    function playSoundBalanced() {
+      playTone(587.33, 'sine', 0.1); // Nada D5
+      setTimeout(() => playTone(880.00, 'sine', 0.25), 100); // Nada A5
+    }
+
+    // Variabel State Game
+    const totalQuestions = 15;
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let correctAnswersCount = 0;
+    let answered = false;
+    let selectedOptionIdx = null;
+
+    // State Timbangan
+    let scaleLeftWeight = 0;
+    let scaleRightWeight = 0;
+    let scaleExpectedDiff = 0; 
+
+    // Bank Soal Matematika Kelas 4 PYP Berbahasa Indonesia (Tanpa Formula/LaTeX)
+    const questions = [
+      {
+        text: "Pola Berulang: Andi menyusun balok-balok berwarna dalam sebuah urutan: Merah, Kuning, Biru, Merah, Kuning, Biru, Merah. Warna balon atau balok apakah yang harus diletakkan Andi berikutnya untuk melanjutkan pola tersebut?",
+        badge: "Pola Warna Berulang",
+        options: ["Kuning", "Biru", "Merah", "Hijau"],
+        correctIdx: 0,
+        rationale: "Pola warna berulang setiap 3 balok, yaitu Merah, Kuning, kemudian Biru. Karena urutan diakhiri dengan balok Merah, maka berikutnya adalah balok Kuning.",
+        hint: "Perhatikan susunan tiga warna pertama yang terus berulang secara teratur.",
+        scaleType: false
+      },
+      {
+        text: "Pola Bilangan Membesar: Perhatikan urutan bilangan naik berikut ini: 3, 7, 11, 15, dan seterusnya. Berapakah angka berikutnya yang paling tepat untuk mengisi kelanjutan pola tersebut?",
+        badge: "Pola Penambahan Tetap",
+        options: ["17", "18", "19", "20"],
+        correctIdx: 2,
+        rationale: "Aturan dari pola bilangan ini adalah selalu ditambahkan 4 dari bilangan sebelumnya. Jadi, 15 ditambah 4 adalah 19.",
+        hint: "Cari tahu selisih antara bilangan pertama ke kedua, atau bilangan kedua ke ketiga. Jumlahkan angka terakhir dengan selisih tersebut.",
+        scaleType: false
+      },
+      {
+        text: "Timbangan Seimbang: Di piring timbangan sebelah kiri ada sebuah Kotak Misteri x dan beban seberat 4 kg. Di piring timbangan sebelah kanan ada beban seberat 12 kg. Agar timbangan seimbang sempurna, berapa kg berat Kotak Misteri x?",
+        badge: "Persamaan Satu Langkah",
+        options: ["6 kg", "8 kg", "10 kg", "16 kg"],
+        correctIdx: 1,
+        rationale: "Agar timbangan seimbang, berat di sisi kiri harus sama dengan berat di sisi kanan. Berat kotak misteri adalah 12 dikurangi 4, yaitu 8 kg.",
+        hint: "Jika kamu mengambil beban 4 kg dari piring kiri, kamu juga harus mengambil beban 4 kg dari piring kanan agar timbangan tetap rata.",
+        scaleType: true,
+        initLeft: 4, 
+        initRight: 12, 
+        targetX: 8 
+      },
+      {
+        text: "Kalimat Matematika Terbuka: Jika Segitiga ditambah 6 sama dengan 14, berapakah nilai Segitiga yang benar agar kalimat matematika tersebut bernilai BENAR?",
+        badge: "Operasi Kebalikan",
+        options: ["6", "7", "8", "9"],
+        correctIdx: 2,
+        rationale: "Sebuah angka yang tidak diketahui jika ditambahkan 6 akan menghasilkan 14. Kita bisa mencarinya menggunakan operasi pengurangan, yaitu 14 dikurangi 6 sama dengan 8.",
+        hint: "Gunakan pengurangan untuk membalikkan penambahan 6.",
+        scaleType: true,
+        initLeft: 6,
+        initRight: 14,
+        targetX: 8
+      },
+      {
+        text: "Mesin Fungsi Ajaib: Sebuah mesin matematika pintar mengubah angka masukan menjadi angka keluaran dengan aturan rahasia tertentu: Masukan 2 menghasilkan Keluaran 6, Masukan 4 menghasilkan Keluaran 12, Masukan 5 menghasilkan Keluaran 15. Apa aturan rahasia mesin fungsi ini?",
+        badge: "Aturan Masukan & Keluaran",
+        options: ["Ditambah 4", "Dikali 3", "Dikurangi 4", "Dikali 2"],
+        correctIdx: 1,
+        rationale: "Setiap angka masukan dikalikan dengan 3 untuk menghasilkan angka keluaran. Sebagai contoh, 2 dikali 3 adalah 6, dan 4 dikali 3 adalah 12.",
+        hint: "Hubungkan setiap angka masukan dengan angka keluaran pasangannya. Apakah angkanya membesar karena penjumlahan atau perkalian?",
+        scaleType: false
+      },
+      {
+        text: "Simbol Kembar: Jika dua buah simbol Bintang yang kembar identik dijumlahkan menghasilkan nilai total: Bintang ditambah Bintang sama dengan 16. Berapakah nilai untuk satu buah simbol Bintang?",
+        badge: "Variabel Identik",
+        options: ["6", "7", "8", "9"],
+        correctIdx: 2,
+        rationale: "Dua angka yang sama persis jika ditambahkan menghasilkan 16. Maka kita bagi 16 menjadi dua bagian yang sama besar, yaitu 16 dibagi 2 sama dengan 8.",
+        hint: "Cari angka kembar yang jika ditambahkan bersama dirinya sendiri menghasilkan nilai 16.",
+        scaleType: false
+      },
+      {
+        text: "Timbangan Buah Stroberi: Di timbangan pasar, diketahui berat 3 buah jeruk sama persis dengan berat 9 buah stroberi. Berapa buah stroberi yang setara dengan berat 1 buah jeruk saja?",
+        badge: "Penyederhanaan Rasio",
+        options: ["2 stroberi", "3 stroberi", "4 stroberi", "6 stroberi"],
+        correctIdx: 1,
+        rationale: "Jika 3 jeruk setara dengan 9 stroberi, maka kita bisa membagi jumlah stroberi ke dalam 3 kelompok jeruk secara merata, yaitu 9 dibagi 3 sama dengan 3 stroberi.",
+        hint: "Bagilah total 9 buah stroberi secara rata ke 3 buah jeruk yang ada.",
+        scaleType: true,
+        initLeft: 3, 
+        initRight: 9, 
+        targetX: 3
+      },
+      {
+        text: "Mila sedang memikirkan sebuah angka misterius y. Jika ia mengurangi angka misterius tersebut dengan 5, hasilnya adalah 11. Angka berapakah y yang dipikirkan Mila?",
+        badge: "Persamaan Pengurangan",
+        options: ["6", "15", "16", "20"],
+        correctIdx: 2,
+        rationale: "Persamaan ini bisa ditulis sebagai y dikurangi 5 sama dengan 11. Dengan melakukan kebalikan operasi, maka y adalah 11 ditambah 5 sama dengan 16.",
+        hint: "Karena angkanya berkurang setelah dikurangi 5 dan bersisa 11, angka awal tersebut pastilah lebih besar dari 11.",
+        scaleType: false
+      },
+      {
+        text: "Pola Bilangan Menurun: Perhatikan urutan bilangan yang makin mengecil berikut ini: 40, 35, 30, 25, dan seterusnya. Apa aturan matematika dari pola bilangan menurun ini?",
+        badge: "Pola Menurun",
+        options: ["Dikurangi 5", "Dikurangi 10", "Ditambah 5", "Dikurangi 4"],
+        correctIdx: 0,
+        rationale: "Setiap angka berurutan selalu berkurang sebesar 5 angka dari angka sebelumnya. Jadi aturan pola ini adalah dikurangi 5.",
+        hint: "Hitung mundur seberapa banyak langkah dari angka 40 menuju 35, atau dari 35 menuju 30.",
+        scaleType: false
+      },
+      {
+        text: "Pola Batang Korek Api: Untuk membuat 1 buah bangun segitiga, kita membutuhkan 3 batang korek api. Untuk membuat 2 buah segitiga yang saling menempel berdampingan, kita membutuhkan 5 batang korek api. Untuk membuat 3 buah segitiga berdampingan, kita membutuhkan 7 batang korek api. Berapa batang korek api yang kita perlukan untuk membuat 4 buah segitiga berdampingan?",
+        badge: "Pola Geometri Tumbuh",
+        options: ["8", "9", "10", "11"],
+        correctIdx: 1,
+        rationale: "Jumlah korek api membentuk pola bilangan: 3, 5, 7, ... yang selalu bertambah 2 batang setiap kali segitiga bertambah karena satu sisinya dipakai bersama. Maka segitiga keempat membutuhkan 7 ditambah 2 sama dengan 9 batang korek api.",
+        hint: "Segitiga baru yang ditempelkan di sebelah segitiga lama hanya membutuhkan 2 batang tambahan karena satu sisi sudah berimpitan.",
+        scaleType: false
+      },
+      {
+        text: "Jika diketahui kalimat perkalian: 5 dikali Kotak Misteri sama dengan 40. Berapakah angka yang tepat di dalam Kotak Misteri tersebut?",
+        badge: "Persamaan Perkalian",
+        options: ["6", "7", "8", "9"],
+        correctIdx: 2,
+        rationale: "Untuk menemukan bilangan pengali yang tidak diketahui, kita bagi hasil akhir dengan angka yang sudah diketahui, yaitu 40 dibagi 5 sama dengan 8.",
+        hint: "Ingat kembali tabel perkalian lima. Angka berapa yang jika dikalikan 5 akan menghasilkan nilai 40?",
+        scaleType: false
+      },
+      {
+        text: "Pernyataan Benar/Salah: Apakah kalimat matematika berikut ini bernilai BENAR atau SALAH? 25 dikurangi x sama dengan 15, jika x bernilai 10.",
+        badge: "Menguji Nilai Kebenaran",
+        options: ["BENAR", "SALAH"],
+        correctIdx: 0,
+        rationale: "Jika kita mengganti huruf x dengan angka 10, maka perhitungannya menjadi 25 dikurangi 10 yang hasilnya adalah benar 15. Oleh karena itu, pernyataan tersebut adalah benar.",
+        hint: "Ganti huruf x dengan angka 10 dan hitunglah apakah 25 dikurangi 10 menghasilkan angka 15.",
+        scaleType: false
+      },
+      {
+        text: "Timbangan Kado Misteri: Di piring sebelah kiri timbangan, ada sebuah Kado Misteri k dan beban seberat 7 kg. Di piring sebelah kanan timbangan, ada beban seberat 15 kg. Berapakah berat Kado Misteri k agar timbangan tersebut menjadi seimbang rata?",
+        badge: "Pemodelan Timbangan",
+        options: ["6 kg", "7 kg", "8 kg", "22 kg"],
+        correctIdx: 2,
+        rationale: "Kado ditambah 7 kg harus sama dengan 15 kg. Dengan mengurangkan 7 kg di kedua sisi, kita peroleh berat kado k adalah 15 dikurangi 7, yaitu 8 kg.",
+        hint: "Berat beban kado misterius ditambah dengan 7 kg harus pas menghasilkan total berat 15 kg.",
+        scaleType: true,
+        initLeft: 7,
+        initRight: 15,
+        targetX: 8
+      },
+      {
+        text: "Sebuah Mesin Fungsi ajaib dikonfigurasi dengan aturan rumus: Keluaran sama dengan Masukan ditambah 12. Jika angka masukan yang dimasukkan ke dalam mesin adalah 15, berapakah angka keluaran yang akan dikeluarkan oleh mesin tersebut?",
+        badge: "Menerapkan Aturan Fungsi",
+        options: ["25", "27", "29", "30"],
+        correctIdx: 1,
+        rationale: "Sesuai petunjuk aturan mesin, kita tinggal menambahkan nilai masukan dengan angka 12. Diperoleh 15 ditambah 12 sama dengan 27.",
+        hint: "Jumlahkan secara langsung nilai angka masukan 15 dengan nilai tambahan mesin yaitu 12.",
+        scaleType: false
+      },
+      {
+        text: "Beni memiliki beberapa kelereng di dalam kantong celananya (dilambangkan dengan huruf k). Setelah Beni memberikan 8 kelereng kepada adiknya, kelereng Beni sekarang tersisa 12 butir. Kalimat matematika manakah di bawah ini yang paling tepat untuk menggambarkan keadaan kelereng Beni?",
+        badge: "Merumuskan Kalimat Matematika",
+        options: ["k ditambah 8 sama dengan 12", "k dikurangi 8 sama dengan 12", "12 dikurangi k sama dengan 8", "k dikurangi 12 sama dengan 8"],
+        correctIdx: 1,
+        rationale: "Karena kelereng Beni berkurang setelah diberikan kepada adik, kita menggunakan simbol pengurangan. Sehingga didapat persamaan k dikurangi 8 sama dengan 12.",
+        hint: "Jumlah kelereng semula adalah k, lalu berkurang sebanyak 8 butir, dan sisa akhirnya adalah 12 butir.",
+        scaleType: false
+      }
+    ];
+
+    // Menginisiasi Game Saat Halaman Dimuat
+    window.onload = function() {
+      showQuestion(currentQuestionIndex);
+      initScratchpad();
+    };
+
+    // Fungsi Menampilkan Soal
+    function showQuestion(index) {
+      answered = false;
+      selectedOptionIdx = null;
+      document.getElementById("feedback-banner").classList.add("hidden");
+      
+      const q = questions[index];
+      
+      // Perbarui Progress Tracker
+      document.getElementById("progress-text").innerText = `Soal ${index + 1} / ${totalQuestions}`;
+      document.getElementById("progress-bar-fill").style.width = `${((index + 1) / totalQuestions) * 100}%`;
+      
+      // Perbarui Badge Konsep & Teks Soal
+      document.getElementById("pyp-concept-badge").innerText = `Konsep Kunci: ${q.badge}`;
+      document.getElementById("question-text").innerText = q.text;
+
+      // Atur Visibilitas Timbangan Interaktif
+      const simContainer = document.getElementById("simulator-container");
+      if (q.scaleType) {
+        simContainer.classList.remove("hidden");
+        // Berikan nilai beban awal sesuai data soal
+        scaleLeftWeight = q.initLeft;
+        scaleRightWeight = q.initRight;
+        scaleExpectedDiff = q.targetX; 
+        updateBalanceScaleUI();
+      } else {
+        simContainer.classList.add("hidden");
+      }
+
+      // Render Kisi Pilihan Jawaban
+      const grid = document.getElementById("answers-grid");
+      grid.innerHTML = "";
+      
+      q.options.forEach((opt, idx) => {
+        const btn = document.createElement("button");
+        btn.id = `opt-btn-${idx}`;
+        btn.className = "bg-white hover:bg-indigo-50 text-gray-700 font-bold p-5 rounded-2xl border-2 border-gray-100 hover:border-indigo-300 shadow-sm hover:shadow text-left transition-all duration-200 transform active:scale-95 flex items-center gap-3 text-base";
+        
+        // Label Karakter Opsi (A, B, C, D)
+        const badge = document.createElement("span");
+        badge.className = "w-8 h-8 rounded-full bg-slate-100 text-slate-500 font-extrabold flex items-center justify-center text-sm flex-shrink-0";
+        badge.innerText = String.fromCharCode(65 + idx); 
+        
+        const textSpan = document.createElement("span");
+        textSpan.className = "answer-text";
+        textSpan.innerText = opt;
+        
+        btn.appendChild(badge);
+        btn.appendChild(textSpan);
+        btn.onclick = () => selectOption(idx);
+        
+        grid.appendChild(btn);
+      });
+    }
+
+    // Pembaca Suara (Audio Speech Synthesis)
+    function speakQuestion() {
+      const q = questions[currentQuestionIndex];
+      const utterance = new SpeechSynthesisUtterance(q.text);
+      utterance.lang = "id-ID"; // Set suara dalam Bahasa Indonesia
+      utterance.rate = 1.0;
+      window.speechSynthesis.speak(utterance);
+    }
+
+    // Fungsi Pengatur Beban Timbangan
+    function changeWeight(side, val) {
+      if (side === 'left') {
+        scaleLeftWeight = Math.max(0, scaleLeftWeight + val);
+      } else {
+        scaleRightWeight = Math.max(0, scaleRightWeight + val);
+      }
+      updateBalanceScaleUI();
+    }
+
+    function resetCurrentScale() {
+      const q = questions[currentQuestionIndex];
+      if (q.scaleType) {
+        scaleLeftWeight = q.initLeft;
+        scaleRightWeight = q.initRight;
+        updateBalanceScaleUI();
+      }
+    }
+
+    function updateBalanceScaleUI() {
+      const diff = scaleLeftWeight - scaleRightWeight;
+      
+      // Perbarui angka teks di piring timbangan
+      document.getElementById("txt-left-weight").textContent = `${scaleLeftWeight} kg`;
+      document.getElementById("txt-right-weight").textContent = `${scaleRightWeight} kg`;
+
+      // Menghitung kemiringan maksimal lengan timbangan (+/- 15 derajat)
+      let angle = 0;
+      if (diff > 0) {
+        angle = Math.min(15, diff * 1.5);
+      } else if (diff < 0) {
+        angle = Math.max(-15, diff * 1.5);
+      }
+
+      // Memutar batang lengan horizontal
+      document.getElementById("scale-arm-group").style.transform = `rotate(${angle}deg)`;
+      // Memutar balik piringan timbangan agar tetap tegak lurus ke bawah
+      document.getElementById("scale-pan-left-group").style.transform = `rotate(${-angle}deg)`;
+      document.getElementById("scale-pan-right-group").style.transform = `rotate(${-angle}deg)`;
+
+      // Menampilkan indikator keseimbangan timbangan
+      const indicator = document.getElementById("balance-indicator");
+      if (diff === 0) {
+        indicator.textContent = "⚖️ Seimbang!";
+        indicator.className = "px-4 py-2 rounded-2xl font-black text-sm bg-emerald-100 text-emerald-700 shadow-sm border border-emerald-300";
+        playSoundBalanced();
+      } else {
+        indicator.textContent = diff > 0 ? "⚠️ Kiri Berat!" : "⚠️ Kanan Berat!";
+        indicator.className = "px-4 py-2 rounded-2xl font-black text-sm bg-amber-100 text-amber-700 animate-pulse";
+      }
+    }
+
+    // Fungsi Pemilihan Jawaban Opsi
+    function selectOption(idx) {
+      if (answered) return; 
+      answered = true;
+      selectedOptionIdx = idx;
+      
+      const q = questions[currentQuestionIndex];
+      const isCorrect = idx === q.correctIdx;
+      
+      const feedbackBanner = document.getElementById("feedback-banner");
+      const feedbackIcon = document.getElementById("feedback-icon");
+      const feedbackTitle = document.getElementById("feedback-title");
+      const feedbackRationale = document.getElementById("feedback-rationale");
+      
+      // Menandai warna tombol opsi berdasarkan benar/salah
+      q.options.forEach((_, optIdx) => {
+        const btn = document.getElementById(`opt-btn-${optIdx}`);
+        if (optIdx === q.correctIdx) {
+          // Jawaban benar diberi warna hijau tebal
+          btn.className = "bg-emerald-50 text-emerald-800 font-black p-5 rounded-2xl border-4 border-emerald-400 shadow-md text-left transition-all duration-200 flex items-center gap-3 text-base";
+        } else if (optIdx === idx) {
+          // Jawaban yang salah diklik diberi warna merah tebal
+          btn.className = "bg-rose-50 text-rose-800 font-bold p-5 rounded-2xl border-4 border-rose-300 shadow text-left transition-all duration-200 flex items-center gap-3 text-base";
+        } else {
+          // Pilihan lainnya memudar sedikit
+          btn.className = "bg-gray-50 text-gray-400 font-medium p-5 rounded-2xl border-2 border-gray-100 shadow-sm text-left opacity-60 flex items-center gap-3 text-base cursor-not-allowed";
+        }
+      });
+
+      if (isCorrect) {
+        score += 10;
+        correctAnswersCount++;
+        document.getElementById("live-score").innerText = score;
+        
+        feedbackBanner.className = "bg-emerald-100 border-2 border-emerald-300 text-emerald-900 rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between gap-4 transition-all duration-300 mt-4";
+        feedbackIcon.innerText = "⭐";
+        feedbackTitle.innerText = "Keren, jawabanmu benar!";
+        feedbackRationale.innerText = q.rationale;
+        
+        playSoundSuccess();
+      } else {
+        feedbackBanner.className = "bg-rose-100 border-2 border-rose-200 text-rose-900 rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between gap-4 transition-all duration-300 mt-4";
+        feedbackIcon.innerText = "💡";
+        feedbackTitle.innerText = "Mari belajar bersama!";
+        feedbackRationale.innerText = q.rationale;
+        
+        playSoundError();
+      }
+      
+      feedbackBanner.classList.remove("hidden");
+    }
+
+    // Melangkah ke Soal Selanjutnya
+    function nextQuestion() {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < totalQuestions) {
+        showQuestion(currentQuestionIndex);
+      } else {
+        showResults();
+      }
+    }
+
+    // Menampilkan Lembar Laporan Hasil Akhir
+    function showResults() {
+      document.getElementById("final-correct").innerText = correctAnswersCount;
+      document.getElementById("final-score").innerText = score;
+      
+      const pypText = document.getElementById("pyp-learner-profile-text");
+      
+      // Penilaian berdasarkan performa Profil Pembelajar PYP
+      if (correctAnswersCount >= 13) {
+        pypText.innerText = "Luar biasa hebat! Kamu telah membuktikan sifat pembelajar sejati sebagai THINKER (Pemikir Kritis) dan KNOWLEDGEABLE (Berpengetahuan Luas). Pemahamanmu mengenai kesamaan aljabar dan pola sangat menakjubkan!";
+      } else if (correctAnswersCount >= 8) {
+        pypText.innerText = "Kerja bagus! Kamu menunjukkan sifat REFLEKTIF yang sangat baik. Kamu berhasil menyambungkan konsep fungsi masukan-keluaran serta timbangan matematika dengan baik. Terus tingkatkan kemampuan belajarmu!";
+      } else {
+        pypText.innerText = "Kamu sudah berjuang dengan berani sebagai INQUIRER (Penyelidik yang Hebat)! Jangan patah semangat, aljabar adalah petualangan baru yang seru. Dengan sedikit latihan kesetimbangan timbangan lagi, kamu pasti akan segera menguasainya!";
+      }
+      
+      document.getElementById("results-modal").classList.remove("hidden");
+    }
+
+    // Memulai Ulang Kuis
+    function restartQuiz() {
+      currentQuestionIndex = 0;
+      score = 0;
+      correctAnswersCount = 0;
+      document.getElementById("live-score").innerText = "0";
+      document.getElementById("results-modal").classList.add("hidden");
+      showQuestion(0);
+    }
+
+    function closeModal() {
+      document.getElementById("results-modal").classList.add("hidden");
+    }
+
+    // ----------------- SISTEM CANVAS PAPAN CORET DIGITAL -----------------
+    let canvas, ctx;
+    let drawing = false;
+    let penColor = '#10B981';
+
+    function initScratchpad() {
+      canvas = document.getElementById("scratchpad");
+      ctx = canvas.getContext("2d");
+      
+      resizeCanvas();
+      window.addEventListener('resize', resizeCanvas);
+
+      // Sentuhan Tetikus (Desktop Mouse Listeners)
+      canvas.addEventListener("mousedown", startDrawing);
+      canvas.addEventListener("mouseup", stopDrawing);
+      canvas.addEventListener("mousemove", draw);
+      canvas.addEventListener("mouseleave", stopDrawing);
+
+      // Sentuhan Layar Sentuh (Mobile Touch Listeners)
+      canvas.addEventListener("touchstart", (e) => {
+        e.preventDefault();
+        const touch = e.touches[0];
+        const rect = canvas.getBoundingClientRect();
+        drawing = true;
+        ctx.beginPath();
+        ctx.moveTo(touch.clientX - rect.left, touch.clientY - rect.top);
+      });
+
+      canvas.addEventListener("touchmove", (e) => {
+        e.preventDefault();
+        if (!drawing) return;
+        const touch = e.touches[0];
+        const rect = canvas.getBoundingClientRect();
+        ctx.strokeStyle = penColor;
+        ctx.lineWidth = 3;
+        ctx.lineCap = "round";
+        ctx.lineTo(touch.clientX - rect.left, touch.clientY - rect.top);
+        ctx.stroke();
+      });
+
+      canvas.addEventListener("touchend", stopDrawing);
+    }
+
+    function resizeCanvas() {
+      if (!canvas) return;
+      const tempImg = ctx ? canvas.toDataURL() : null;
+      
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = canvas.parentElement.clientWidth * dpr;
+      canvas.height = 220 * dpr;
+      canvas.style.width = canvas.parentElement.clientWidth + 'px';
+      canvas.style.height = '220px';
+      
+      ctx.scale(dpr, dpr);
+      ctx.strokeStyle = penColor;
+      ctx.lineWidth = 3;
+      ctx.lineCap = "round";
+
+      if (tempImg) {
+        const img = new Image();
+        img.onload = function() {
+          ctx.drawImage(img, 0, 0, canvas.width / dpr, canvas.height / dpr);
+        };
+        img.src = tempImg;
+      }
+    }
+
+    function startDrawing(e) {
+      drawing = true;
+      const rect = canvas.getBoundingClientRect();
+      ctx.beginPath();
+      ctx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
+    }
+
+    function draw(e) {
+      if (!drawing) return;
+      const rect = canvas.getBoundingClientRect();
+      ctx.strokeStyle = penColor;
+      ctx.lineWidth = 3;
+      ctx.lineCap = "round";
+      ctx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
+      ctx.stroke();
+    }
+
+    function stopDrawing() {
+      drawing = false;
+    }
+
+    function clearScratchpad() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      playTone(400, 'sine', 0.05, 0.02);
+    }
+
+    function setPenColor(color) {
+      penColor = color;
+    }
+  </script>
+</body>
+</html>
