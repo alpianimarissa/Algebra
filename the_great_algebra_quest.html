@@ -1,0 +1,1140 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Great Algebra Quest - IB PYP Grade 4 to 5</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Quicksand:wght@400;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    
+    <!-- KaTeX for beautiful and fast Math equations -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
+
+    <style>
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background-color: #FDFDF7;
+        }
+        .kids-heading {
+            font-family: 'Fredoka', sans-serif;
+        }
+        .bounce-hover {
+            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .bounce-hover:hover {
+            transform: scale(1.03);
+        }
+        /* Custom scrollbar for beautiful layout */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 9999px;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-[#FFFDF9] via-[#F0F9FF] to-[#FFF5F5] min-h-screen flex flex-col justify-between overflow-x-hidden select-none">
+
+    <!-- HEADER & SCOREBAR -->
+    <header class="bg-white/90 backdrop-blur-md border-b-4 border-[#4CC9F0] py-3.5 px-6 flex justify-between items-center sticky top-0 z-40 shadow-sm">
+        <div class="flex items-center gap-3">
+            <div class="bg-gradient-to-tr from-[#4CC9F0] to-[#4895EF] text-white p-2.5 rounded-2xl shadow-md">
+                <svg class="w-8 h-8 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 .364l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                </svg>
+            </div>
+            <div>
+                <h1 class="kids-heading text-xl md:text-2xl font-bold text-[#2B2D42]">Algebra Quest 5!</h1>
+                <p class="text-[10px] text-[#4895EF] font-black tracking-widest uppercase">IB PYP Transisi Kelas 4 ➔ Kelas 5</p>
+            </div>
+        </div>
+        
+        <div class="flex items-center gap-2 md:gap-3">
+            <!-- XP Badge -->
+            <div class="bg-[#EBF8FF] border-2 border-[#4895EF] rounded-full px-3 py-1.5 md:px-4 flex items-center gap-1.5 shadow-sm">
+                <span class="text-sm md:text-base">⭐</span>
+                <span id="xp-display" class="font-extrabold text-[#3F37C9] text-xs md:text-sm">0 XP</span>
+            </div>
+            
+            <!-- Scratchpad Toggle -->
+            <button onclick="toggleScratchpad()" class="bg-[#FFF0F5] hover:bg-[#FFE4E1] border-2 border-[#F72585] active:scale-95 transition text-[#F72585] font-extrabold rounded-full px-4 py-1.5 text-xs md:text-sm shadow-sm flex items-center gap-1">
+                🎨 <span>Cakar Gambar</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- SCRATCHPAD DRAWING OVERLAY -->
+    <div id="scratchpad" class="hidden fixed inset-0 z-50 bg-white/95 flex flex-col p-4">
+        <div class="flex justify-between items-center mb-2 border-b-2 border-gray-100 pb-2">
+            <h3 class="kids-heading text-lg font-bold text-[#F72585] flex items-center gap-2">
+                🎨 Papan Coret-Coret Aljabar (Doodle Scratchpad)
+            </h3>
+            <div class="flex items-center gap-2">
+                <button onclick="clearCanvas()" class="bg-red-50 hover:bg-red-100 text-red-600 font-bold px-3 py-1.5 rounded-xl text-xs">Bersihkan</button>
+                <button onclick="toggleScratchpad()" class="bg-[#F72585] hover:bg-[#b5179e] text-white font-bold px-4 py-1.5 rounded-xl text-xs">Tutup</button>
+            </div>
+        </div>
+        <div class="flex-1 bg-pink-50/10 border-4 border-dashed border-[#F72585] rounded-2xl relative cursor-crosshair overflow-hidden">
+            <canvas id="scratch-canvas" class="absolute inset-0 w-full h-full"></canvas>
+        </div>
+        <p class="text-xs text-gray-400 mt-2 text-center">Gunakan jari, stylus, atau mouse untuk mencakar perhitungan polamu di sini!</p>
+    </div>
+
+    <!-- MAIN APP CONTAINER -->
+    <main class="flex-1 flex flex-col items-center justify-center p-4 max-w-5xl mx-auto w-full my-3">
+        
+        <!-- DASHBOARD HUB (MENU UTAMA) -->
+        <div id="dashboard-view" class="w-full bg-white rounded-3xl border-8 border-[#BEE3F8] shadow-xl p-5 md:p-8 text-center space-y-6">
+            <div class="max-w-3xl mx-auto space-y-3">
+                <span class="text-6xl animate-bounce block">🗺️</span>
+                <h2 class="kids-heading text-2xl md:text-4xl font-extrabold text-[#2B2D42]">Selamat Datang di Aljabar Fase C!</h2>
+                <p class="text-sm md:text-base text-gray-600 font-semibold leading-relaxed">
+                    Halo Agen Perubahan! Di Kelas 4 kamu sudah belajar pola sederhana dan timbangan satu langkah. Sekarang saatnya melangkah lebih jauh menuju Kelas 5. Yuk, selidiki tujuan misi, lakukan pemanasan seru, dan selesaikan tantangan aljabarnya!
+                </p>
+            </div>
+
+            <!-- TUJUAN PEMBELAJARAN (LEARNING GOALS) CARD -->
+            <div class="bg-gradient-to-r from-amber-50 to-orange-50 border-4 border-amber-200 rounded-3xl p-5 text-left max-w-3xl mx-auto space-y-3 shadow-sm">
+                <h3 class="kids-heading text-lg font-bold text-amber-800 flex items-center gap-2">
+                    🎯 Tujuan Pembelajaran (Transisi Kelas 4 ➔ 5)
+                </h3>
+                <div class="grid md:grid-cols-3 gap-3.5 text-xs text-amber-950 font-semibold">
+                    <div class="bg-white p-3 rounded-xl border border-amber-100 flex gap-2">
+                        <span class="text-lg">📈</span>
+                        <div>
+                            <strong class="block text-amber-900 mb-0.5">Analisis Pola</strong>
+                            Menghubungkan pola visual dengan Tabel-T (T-Charts) dan menentukan rumusnya.
+                        </div>
+                    </div>
+                    <div class="bg-white p-3 rounded-xl border border-amber-100 flex gap-2">
+                        <span class="text-lg">⚖️</span>
+                        <div>
+                            <strong class="block text-amber-900 mb-0.5">Keseimbangan Adil</strong>
+                            Memahami konsep persamaan satu variabel menggunakan timbangan dua langkah secara adil.
+                        </div>
+                    </div>
+                    <div class="bg-white p-3 rounded-xl border border-amber-100 flex gap-2">
+                        <span class="text-lg">💬</span>
+                        <div>
+                            <strong class="block text-amber-900 mb-0.5">Translasi Model</strong>
+                            Mampu menerjemahkan kalimat kehidupan sehari-hari ke dalam model matematika aljabar.
+                        </div>
+                    </div>
+                </div>
+                <div class="text-[10px] text-amber-600 font-bold flex flex-wrap gap-x-4 justify-center pt-1">
+                    <span>💡 <strong>Konsep Kunci IB:</strong> Bentuk (Form), Hubungan (Connection)</span>
+                    <span>🌿 <strong>Profil Pelajar:</strong> Pemikir (Thinker), Reflektif (Reflective)</span>
+                </div>
+            </div>
+
+            <!-- INTERACTIVE WARM-UP SECTION -->
+            <div id="warmup-container" class="bg-[#F0FDF4] border-4 border-[#86EFAC] rounded-3xl p-5 text-left max-w-3xl mx-auto space-y-4 shadow-sm relative">
+                <div class="flex justify-between items-center flex-wrap gap-2">
+                    <h3 class="kids-heading text-lg font-extrabold text-[#166534] flex items-center gap-2">
+                        🍎 Aktivitas Pemanasan: Detektor Buah Misteri!
+                    </h3>
+                    <span id="warmup-status" class="bg-green-100 text-green-800 text-[10px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider">Pemanasan Belum Selesai</span>
+                </div>
+                <p class="text-xs text-green-900 font-semibold">
+                    Sebelum masuk ke misi utama, ayo latih otakmu dengan memecahkan teka-teki buah ini! Temukan angka yang tepat untuk menggantikan simbol buah:
+                </p>
+
+                <!-- Warm-up Steps inside a card -->
+                <div class="bg-white p-4 rounded-2xl border border-green-100 flex flex-col md:flex-row justify-between items-center gap-4">
+                    <!-- Dynamic Interactive Puzzle Box -->
+                    <div class="w-full md:w-3/5 space-y-2">
+                        <div id="warmup-step-indicator" class="text-[10px] text-green-600 font-black uppercase">Pertanyaan 1 dari 3</div>
+                        <div id="warmup-question-box" class="kids-heading text-xl font-bold text-slate-800 flex items-center gap-2">
+                            <!-- JS loaded dynamically: e.g. 🍎 + 5 = 12 -->
+                        </div>
+                        <p class="text-xs text-slate-500 font-medium">Berapakah nilai angka di balik buah tersebut agar seimbang?</p>
+                    </div>
+
+                    <!-- Warm-up options grid -->
+                    <div id="warmup-options-grid" class="flex gap-2 w-full md:w-2/5 justify-end">
+                        <!-- JS Loaded buttons -->
+                    </div>
+                </div>
+
+                <!-- Congratulations alert within warm-up -->
+                <div id="warmup-congrats-banner" class="hidden bg-emerald-600 text-white p-3.5 rounded-xl text-xs font-bold flex justify-between items-center gap-2 animate-bounce">
+                    <span class="flex items-center gap-2">🎉 Selamat! Kamu telah menyelesaikan pemanasan dengan baik dan berhak mendapatkan <strong>+50 XP Bonus</strong>!</span>
+                    <span class="bg-white text-emerald-800 text-[10px] font-black py-1 px-2.5 rounded-lg">SIAP!</span>
+                </div>
+            </div>
+
+            <!-- MENU GRID -->
+            <div class="grid sm:grid-cols-3 gap-4 pt-2">
+                <!-- Mission 1 -->
+                <button onclick="showSection('misi1')" class="p-5 bg-gradient-to-br from-[#EBF8FF] to-[#E2F0FD] hover:to-[#C3E4FD] border-4 border-[#90CDF4] hover:border-[#63B3ED] rounded-3xl text-left transition duration-300 flex flex-col justify-between h-48 shadow-sm group bounce-hover">
+                    <div class="flex justify-between items-start w-full">
+                        <span class="text-3xl bg-white p-2 rounded-2xl shadow-sm">📈</span>
+                        <span class="text-[9px] font-black text-blue-600 bg-white px-2 py-1 rounded-full uppercase tracking-wider">Misi 1</span>
+                    </div>
+                    <div>
+                        <h3 class="kids-heading text-base font-bold text-slate-800">Detektif Pola & Tabel T</h3>
+                        <p class="text-[11px] text-slate-500 mt-1">Belajar menghubungkan gambar berpola ke bentuk tabel rumus matematika (T-Chart).</p>
+                    </div>
+                </button>
+
+                <!-- Mission 2 -->
+                <button onclick="showSection('misi2')" class="p-5 bg-gradient-to-br from-[#E6FFFA] to-[#E6FFFA] hover:to-[#B2F5EA] border-4 border-[#81E6D9] hover:border-[#4FD1C5] rounded-3xl text-left transition duration-300 flex flex-col justify-between h-48 shadow-sm group bounce-hover">
+                    <div class="flex justify-between items-start w-full">
+                        <span class="text-3xl bg-white p-2 rounded-2xl shadow-sm">⚖️</span>
+                        <span class="text-[9px] font-black text-teal-600 bg-white px-2 py-1 rounded-full uppercase tracking-wider">Misi 2</span>
+                    </div>
+                    <div>
+                        <h3 class="kids-heading text-base font-bold text-slate-800">Timbangan Dua Langkah</h3>
+                        <p class="text-[11px] text-slate-500 mt-1">Mengisolasi variabel misteri dengan dua tahap penyetaraan yang adil.</p>
+                    </div>
+                </button>
+
+                <!-- Mission 3 -->
+                <button onclick="showSection('misi3')" class="p-5 bg-gradient-to-br from-[#FFF5F5] to-[#FED7D7] hover:to-[#FEB2B2] border-4 border-[#FEB2B2] hover:border-[#FC8181] rounded-3xl text-left transition duration-300 flex flex-col justify-between h-48 shadow-sm group bounce-hover">
+                    <div class="flex justify-between items-start w-full">
+                        <span class="text-3xl bg-white p-2 rounded-2xl shadow-sm">💬</span>
+                        <span class="text-[9px] font-black text-rose-600 bg-white px-2 py-1 rounded-full uppercase tracking-wider">Misi 3</span>
+                    </div>
+                    <div>
+                        <h3 class="kids-heading text-base font-bold text-slate-800">Penerjemah Bahasa Rahasia</h3>
+                        <p class="text-[11px] text-slate-500 mt-1">Mengubah persoalan sehari-hari yang rumit menjadi model persamaan aljabar.</p>
+                    </div>
+                </button>
+            </div>
+
+            <!-- START QUIZ BUTTON -->
+            <div class="pt-6 border-t-2 border-slate-100 flex flex-col items-center">
+                <button id="start-quiz-btn" onclick="startQuizMode()" class="px-8 py-4 bg-gradient-to-r from-[#F72585] to-[#7209B7] text-white font-extrabold rounded-2xl shadow-lg hover:shadow-xl hover:scale-105 transition transform duration-200 text-sm md:text-base flex items-center gap-2">
+                    <span>🏆</span> SIAP MENGIKUTI KUIS 10 SOAL TANTANGAN?
+                </button>
+            </div>
+        </div>
+
+        <!-- VIEW: MISI 1 (POLA DAN TABEL) -->
+        <div id="misi1-view" class="hidden w-full bg-white rounded-3xl border-8 border-[#90CDF4] shadow-xl p-6 md:p-10 space-y-6">
+            <div class="border-b-2 border-slate-100 pb-3 flex justify-between items-center">
+                <div>
+                    <span class="text-xs font-black text-blue-600 uppercase tracking-widest">Misi 1: Penyelidikan Pola</span>
+                    <h2 class="kids-heading text-2xl font-extrabold text-[#2B2D42]">Detektif Pola & Tabel T (T-Charts)</h2>
+                </div>
+                <button onclick="backToHub()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-1.5 rounded-xl font-bold text-xs">Kembali</button>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-6 items-center">
+                <div class="space-y-4">
+                    <p class="text-sm text-gray-600 leading-relaxed font-medium">
+                        Di Kelas 4, kamu melihat pola yang tumbuh secara visual. Sekarang, di Kelas 5, kita menyusunnya dalam <strong>Tabel T (T-Chart)</strong> agar kita bisa menebak jumlah pola ke-10, bahkan ke-100 tanpa perlu menggambarnya!
+                    </p>
+                    <div class="bg-blue-50 border-l-4 border-blue-400 p-3.5 rounded-r-xl text-xs space-y-2">
+                        <p class="font-bold text-blue-900">Perhatikan Aturan Atas-Bawah:</p>
+                        <p class="text-blue-800">Jika nomor langkah ($x$) dikalikan $2$ lalu ditambah $1$ menghasilkan banyak balok ($y$), persamaannya ditulis: <strong class="font-mono text-sm block mt-1">$y = 2x + 1$</strong></p>
+                    </div>
+                </div>
+
+                <!-- Interactive Pattern Builder -->
+                <div class="bg-slate-50 p-5 rounded-2xl border-2 border-slate-100 space-y-4">
+                    <h4 class="font-bold text-xs text-slate-500 uppercase text-center">Eksplorasi Langkah Pola Visual</h4>
+                    <div class="flex justify-center gap-4">
+                        <button onclick="selectPatternStep(1)" class="px-3.5 py-1.5 bg-[#4CC9F0] text-white rounded-lg text-xs font-bold shadow">Langkah 1</button>
+                        <button onclick="selectPatternStep(2)" class="px-3.5 py-1.5 bg-slate-200 text-slate-700 rounded-lg text-xs font-bold hover:bg-slate-300">Langkah 2</button>
+                        <button onclick="selectPatternStep(3)" class="px-3.5 py-1.5 bg-slate-200 text-slate-700 rounded-lg text-xs font-bold hover:bg-slate-300">Langkah 3</button>
+                    </div>
+                    
+                    <!-- Visual Blocks Container -->
+                    <div id="pattern-visual" class="flex justify-center items-center h-20 gap-1.5">
+                        <!-- Loaded dynamically -->
+                    </div>
+
+                    <!-- T-Chart Table -->
+                    <table class="w-full text-xs text-center border-collapse">
+                        <thead>
+                            <tr class="bg-blue-100 text-blue-950 font-bold">
+                                <th class="p-2 border border-blue-200">Langkah ($x$)</th>
+                                <th class="p-2 border border-blue-200">Banyak Kotak ($y$)</th>
+                            </tr>
+                        </thead>
+                        <tbody class="font-semibold">
+                            <tr id="row-step-1" class="bg-blue-50/50">
+                                <td class="p-2 border border-blue-200">1</td>
+                                <td class="p-2 border border-blue-200 text-blue-600 font-extrabold">3</td>
+                            </tr>
+                            <tr id="row-step-2">
+                                <td class="p-2 border border-blue-200">2</td>
+                                <td class="p-2 border border-blue-200">5</td>
+                            </tr>
+                            <tr id="row-step-3">
+                                <td class="p-2 border border-blue-200">3</td>
+                                <td class="p-2 border border-blue-200">7</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- VIEW: MISI 2 (TIMBANGAN DUA LANGKAH) -->
+        <div id="misi2-view" class="hidden w-full bg-white rounded-3xl border-8 border-[#81E6D9] shadow-xl p-6 md:p-10 space-y-6">
+            <div class="border-b-2 border-slate-100 pb-3 flex justify-between items-center">
+                <div>
+                    <span class="text-xs font-black text-teal-600 uppercase tracking-widest">Misi 2: Keseimbangan Aljabar</span>
+                    <h2 class="kids-heading text-2xl font-extrabold text-[#2B2D42]">Penyetaraan Timbangan Dua Langkah</h2>
+                </div>
+                <button onclick="backToHub()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-1.5 rounded-xl font-bold text-xs">Kembali</button>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-6 items-center">
+                <div class="space-y-3">
+                    <p class="text-sm text-gray-600 leading-relaxed font-medium">
+                        Jika kamu memiliki persamaan seperti <strong class="text-teal-700 font-mono">$2x + 3 = 11$</strong>, bagaimana cara menemukan satu nilai kotak $x$? Kita harus melakukan <strong>dua langkah adil</strong>:
+                    </p>
+                    <div class="p-4 bg-teal-50 border-l-4 border-teal-400 rounded-r-xl text-xs space-y-2 text-teal-900">
+                        <p><strong>Langkah 1:</strong> Singkirkan pengganggu (konstanta $+3$) dengan mengurangi $3$ di kedua sisi timbangan!</p>
+                        <p class="font-mono text-center font-bold bg-white/70 py-1 rounded border border-teal-200">$2x = 11 - 3 \implies 2x = 8$</p>
+                        <p><strong>Langkah 2:</strong> Bagi sisa beban menjadi dua kelompok sama rata!</p>
+                        <p class="font-mono text-center font-bold bg-white/70 py-1 rounded border border-teal-200">$x = \frac{8}{2} \implies x = 4$</p>
+                    </div>
+                </div>
+
+                <!-- Simulator Timbangan 2 Langkah -->
+                <div class="bg-slate-50 p-5 rounded-2xl border-2 border-slate-100 space-y-4 text-center">
+                    <h4 class="font-bold text-xs text-slate-500 uppercase">Simulator Timbangan Interaktif</h4>
+                    <div class="flex justify-center gap-6 items-center">
+                        <div>
+                            <label class="text-xs text-slate-600 font-bold block mb-1">Koefisien variabel ($2x$):</label>
+                            <span class="text-base font-extrabold text-teal-700">2 Kotak Misteri</span>
+                        </div>
+                        <div>
+                            <label class="text-xs text-slate-600 font-bold block mb-1">Tambah kelereng ($+3$):</label>
+                            <span class="text-base font-extrabold text-teal-700">3 Kelereng</span>
+                        </div>
+                    </div>
+
+                    <!-- SVG balance scale representation -->
+                    <div class="flex justify-center my-4">
+                        <svg id="scale-misi2-svg" class="w-52 h-40 bg-white border border-teal-200 rounded-xl" viewBox="0 0 100 80">
+                            <!-- Pivot -->
+                            <polygon points="50,45 45,75 55,75" fill="#90A4AE"/>
+                            <!-- Beam -->
+                            <line x1="15" y1="45" x2="85" y2="45" stroke="#37474F" stroke-width="3" stroke-linecap="round"/>
+                            <!-- Left load (2 boxes + 3 dots) -->
+                            <g transform="translate(15, 45)">
+                                <circle cx="0" cy="0" r="4" fill="#E29578"/>
+                                <rect x="-8" y="-14" w="6" h="6" fill="#F72585" rx="1"/>
+                                <rect x="2" y="-14" w="6" h="6" fill="#F72585" rx="1"/>
+                                <circle cx="-4" cy="-5" r="1.5" fill="#4361EE"/>
+                                <circle cx="0" cy="-5" r="1.5" fill="#4361EE"/>
+                                <circle cx="4" cy="-5" r="1.5" fill="#4361EE"/>
+                            </g>
+                            <!-- Right load (11 dots) -->
+                            <g transform="translate(85, 45)">
+                                <circle cx="0" cy="0" r="4" fill="#00B4D8"/>
+                                <circle cx="-6" cy="-12" r="1.5" fill="#4361EE"/>
+                                <circle cx="-2" cy="-12" r="1.5" fill="#4361EE"/>
+                                <circle cx="2" cy="-12" r="1.5" fill="#4361EE"/>
+                                <circle cx="6" cy="-12" r="1.5" fill="#4361EE"/>
+                                <circle cx="-4" cy="-7" r="1.5" fill="#4361EE"/>
+                                <circle cx="0" cy="-7" r="1.5" fill="#4361EE"/>
+                                <circle cx="4" cy="-7" r="1.5" fill="#4361EE"/>
+                                <circle cx="-6" cy="-2" r="1.5" fill="#4361EE"/>
+                                <circle cx="-2" cy="-2" r="1.5" fill="#4361EE"/>
+                                <circle cx="2" cy="-2" r="1.5" fill="#4361EE"/>
+                                <circle cx="6" cy="-2" r="1.5" fill="#4361EE"/>
+                            </g>
+                        </svg>
+                    </div>
+
+                    <p class="text-xs text-slate-500 font-bold">Keseimbangan: $2x + 3 = 11 \iff x = 4$</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- VIEW: MISI 3 (PENERJEMAH BAHASA) -->
+        <div id="misi3-view" class="hidden w-full bg-white rounded-3xl border-8 border-[#FEB2B2] shadow-xl p-6 md:p-10 space-y-6">
+            <div class="border-b-2 border-slate-100 pb-3 flex justify-between items-center">
+                <div>
+                    <span class="text-xs font-black text-rose-600 uppercase tracking-widest">Misi 3: Bahasa Rahasia Aljabar</span>
+                    <h2 class="kids-heading text-2xl font-extrabold text-[#2B2D42]">Menerjemahkan Kalimat Menjadi Aljabar</h2>
+                </div>
+                <button onclick="backToHub()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-1.5 rounded-xl font-bold text-xs">Kembali</button>
+            </div>
+
+            <p class="text-sm text-gray-600 leading-relaxed font-medium">
+                Matematika adalah bahasa universal yang keren. Ketika kita membaca sebuah teka-teki, kita bisa merumuskannya langsung menjadi persamaan aljabar menggunakan kata kunci di bawah ini:
+            </p>
+
+            <div class="grid md:grid-cols-2 gap-4">
+                <div class="bg-rose-50 p-4 rounded-2xl border border-rose-100 space-y-3">
+                    <h4 class="font-extrabold text-sm text-rose-950">🔑 Detektor Kata Kunci Aljabar</h4>
+                    <ul class="space-y-2 text-xs text-rose-900 font-semibold">
+                        <li class="flex justify-between border-b pb-1"><span>"Lebih banyak dari..." / "Ditambah"</span> <span class="bg-white px-2 py-0.5 rounded text-rose-600 border border-rose-200">$+$ (Penambahan)</span></li>
+                        <li class="flex justify-between border-b pb-1"><span>"Lebih sedikit dari..." / "Selisih"</span> <span class="bg-white px-2 py-0.5 rounded text-rose-600 border border-rose-200">$-$ (Pengurangan)</span></li>
+                        <li class="flex justify-between border-b pb-1"><span>"Kali lipat..." / "Setiap"</span> <span class="bg-white px-2 py-0.5 rounded text-rose-600 border border-rose-200">$\times$ (Perkalian)</span></li>
+                        <li class="flex justify-between border-b pb-1"><span>"Dibagi rata..." / "Satu bagian"</span> <span class="bg-white px-2 py-0.5 rounded text-rose-600 border border-rose-200">$/$ (Pembagian)</span></li>
+                    </ul>
+                </div>
+
+                <!-- Interactive Translate Sandbox -->
+                <div class="bg-slate-50 p-5 rounded-2xl border-2 border-slate-100 space-y-4">
+                    <h4 class="font-bold text-xs text-slate-500 uppercase text-center">Mesin Penerjemah Aljabar</h4>
+                    <p class="text-xs text-slate-600 font-medium text-center">Pilihlah salah satu kalimat di bawah ini untuk melihat terjemahan aljabarnya:</p>
+                    
+                    <div class="flex flex-col gap-2">
+                        <button onclick="translateSandbox('lebih')" class="w-full text-left p-2.5 bg-white border rounded-xl text-xs font-bold hover:bg-slate-100">"Tiga tahun lebih tua dari umur kakak ($x$)"</button>
+                        <button onclick="translateSandbox('kali')" class="w-full text-left p-2.5 bg-white border rounded-xl text-xs font-bold hover:bg-slate-100">"Dua kali lipat dari berat seekor kucing ($y$)"</button>
+                    </div>
+
+                    <div id="sandbox-result" class="hidden p-3 bg-emerald-50 text-emerald-900 text-xs font-bold text-center rounded-xl border border-emerald-200">
+                        <!-- Loaded dynamically -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- VIEW: EVALUASI KUIS 10 SOAL TANTANGAN (Fase C Level) -->
+        <div id="quiz-view" class="hidden w-full bg-white rounded-3xl border-8 border-[#4CC9F0] shadow-xl overflow-hidden flex flex-col justify-between min-h-[500px]">
+            <!-- Top Loading Progress Bar -->
+            <div class="w-full bg-[#EBF8FF] h-3.5">
+                <div id="progress-bar" class="bg-gradient-to-r from-[#4CC9F0] to-[#4895EF] h-full transition-all duration-300" style="width: 0%"></div>
+            </div>
+
+            <!-- Question Area -->
+            <div class="p-6 md:p-10 flex-1 flex flex-col justify-center">
+                <div class="mb-4 flex items-center justify-between border-b border-slate-100 pb-2">
+                    <span id="quiz-category-badge" class="text-xs font-black text-[#4895EF] uppercase tracking-widest">Kuis Aljabar Naik Kelas</span>
+                    <span id="quiz-index-indicator" class="text-xs font-bold text-gray-400 bg-slate-50 px-2.5 py-1 rounded-full">Soal 1 / 10</span>
+                </div>
+
+                <!-- Math Equation Box -->
+                <div id="problem-box" class="space-y-3">
+                    <!-- Dynamic rendering -->
+                </div>
+
+                <!-- Grid Options -->
+                <div id="options-grid" class="grid sm:grid-cols-2 gap-3 mt-5">
+                    <!-- Dynamic rendering -->
+                </div>
+
+                <!-- Explanation Box -->
+                <div id="explanation-box" class="hidden mt-6 p-4 rounded-2xl text-xs md:text-sm leading-relaxed border-2 animate-fade-in">
+                    <!-- Dynamic rendering -->
+                </div>
+            </div>
+
+            <!-- Quiz Navigation Footer -->
+            <div class="bg-[#F8F9FA] border-t-2 border-slate-100 px-6 py-4 flex justify-between items-center">
+                <button onclick="backToHub()" class="text-xs font-extrabold text-[#4895EF] hover:text-[#3f37c9] flex items-center gap-1 bg-white border border-[#BEE3F8] px-4 py-2.5 rounded-xl shadow-sm transition">
+                    ◀ Berhenti & Kembali
+                </button>
+                <button id="next-question-btn" onclick="nextQuestion()" class="bg-gradient-to-r from-gray-400 to-gray-500 text-white font-extrabold px-6 py-2.5 rounded-xl text-xs md:text-sm shadow-md transition flex items-center gap-1 cursor-pointer">
+                    Lewati / Lanjut ▶
+                </button>
+            </div>
+        </div>
+
+        <!-- VIEW: RINGKASAN SKOR HASIL KUIS -->
+        <div id="outcome-view" class="hidden w-full bg-white rounded-3xl border-8 border-[#BEE3F8] shadow-xl p-6 md:p-10 text-center space-y-6">
+            <span class="text-7xl block animate-bounce" id="outcome-emoji">🏆</span>
+            <div class="space-y-2">
+                <h2 class="kids-heading text-3xl font-extrabold text-[#2B2D42]" id="outcome-title">Sesi Kuis Selesai!</h2>
+                <p class="text-sm text-gray-500 font-semibold" id="outcome-subtitle">Kamu sangat luar biasa.</p>
+            </div>
+
+            <div class="bg-[#EBF8FF] border-2 border-dashed border-[#90CDF4] rounded-3xl p-6 max-w-md mx-auto grid grid-cols-2 gap-4">
+                <div>
+                    <span class="text-xs font-bold text-blue-500 uppercase block">XP yang Didapat</span>
+                    <span class="text-2xl font-extrabold text-[#3F37C9]" id="outcome-xp">0 XP</span>
+                </div>
+                <div>
+                    <span class="text-xs font-bold text-blue-500 uppercase block">Akurasi Jawaban</span>
+                    <span class="text-2xl font-extrabold text-[#3F37C9]" id="outcome-accuracy">0%</span>
+                </div>
+            </div>
+
+            <!-- Profile Badge Learner Profile IB -->
+            <div class="bg-[#FFFDF5] border border-amber-200 p-4 rounded-2xl max-w-md mx-auto text-xs space-y-1.5 text-left">
+                <span class="font-extrabold text-amber-700 uppercase tracking-widest block text-[10px] text-center">Lencana Profil Pelajar IB Kamu</span>
+                <p class="font-extrabold text-slate-800 text-sm text-center">💡 Berpikir Kritis & Reflektif (Critical Thinker)</p>
+                <p class="text-slate-500 text-center mt-1">Dengan menyelesaikan petualangan ini, kamu telah membuktikan rasa ingin tahu yang tinggi dalam memecahkan misteri aljabar secara mandiri.</p>
+            </div>
+
+            <div class="flex flex-wrap justify-center gap-3 pt-2">
+                <button onclick="backToHub()" class="px-6 py-3 bg-white border-2 border-[#BEE3F8] hover:bg-slate-50 text-[#4895EF] font-black rounded-2xl text-xs md:text-sm shadow-sm transition">
+                    Kembali ke Menu Utama
+                </button>
+                <button onclick="restartQuiz()" class="px-6 py-3 bg-gradient-to-r from-[#4CC9F0] to-[#4895EF] text-white font-black rounded-2xl text-xs md:text-sm shadow-md hover:scale-105 transition">
+                    Ulangi Kuis
+                </button>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- FLOATING TOAST NOTIFICATION -->
+    <div id="toast" class="hidden fixed bottom-12 left-1/2 transform -translate-x-1/2 z-50 text-white font-bold px-6 py-3.5 rounded-2xl shadow-xl flex items-center gap-2 animate-bounce">
+        <span id="toast-icon">✨</span> <span id="toast-text">Luar biasa!</span>
+    </div>
+
+    <!-- CONFETTI CELEBRATION CANVAS -->
+    <canvas id="confetti" class="fixed inset-0 pointer-events-none z-50 w-full h-full hidden"></canvas>
+
+    <!-- FOOTER -->
+    <footer class="text-center text-xs text-slate-400 py-4 border-t border-slate-200/50 bg-white/50 w-full">
+        <p>© 2026 Masterclass Kuis PLSV Transisi Kelas 5. Didukung oleh KaTeX Engine.</p>
+    </footer>
+
+    <!-- MAIN APP JAVASCRIPT SYSTEM -->
+    <script>
+        // --- 1. AUDIO SYNTHESIZER ---
+        let audioCtx;
+        function getAudioContext() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+            return audioCtx;
+        }
+
+        function playSound(type) {
+            try {
+                const ctx = getAudioContext();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+
+                if (type === 'correct') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(523.25, ctx.currentTime); 
+                    osc.frequency.setValueAtTime(659.25, ctx.currentTime + 0.08); 
+                    osc.frequency.setValueAtTime(783.99, ctx.currentTime + 0.16); 
+                    gain.gain.setValueAtTime(0.1, ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.4);
+                    osc.start(ctx.currentTime);
+                    osc.stop(ctx.currentTime + 0.4);
+                } else if (type === 'incorrect') {
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(220, ctx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(110, ctx.currentTime + 0.3);
+                    gain.gain.setValueAtTime(0.08, ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
+                    osc.start(ctx.currentTime);
+                    osc.stop(ctx.currentTime + 0.3);
+                } else if (type === 'click') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(440, ctx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(300, ctx.currentTime + 0.08);
+                    gain.gain.setValueAtTime(0.03, ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.08);
+                    osc.start(ctx.currentTime);
+                    osc.stop(ctx.currentTime + 0.08);
+                } else if (type === 'level-up') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(261.63, ctx.currentTime);
+                    osc.frequency.setValueAtTime(329.63, ctx.currentTime + 0.1);
+                    osc.frequency.setValueAtTime(392.00, ctx.currentTime + 0.2);
+                    osc.frequency.setValueAtTime(523.25, ctx.currentTime + 0.3);
+                    gain.gain.setValueAtTime(0.15, ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.6);
+                    osc.start(ctx.currentTime);
+                    osc.stop(ctx.currentTime + 0.6);
+                }
+            } catch (e) {
+                console.log("Audio contexts blocked.");
+            }
+        }
+
+        // --- 2. 10 TRANSITIONAL GRADE 4 TO 5 ALGEBRA QUESTIONS ---
+        const questionDatabase = [
+            {
+                title: "Detektif Pola T-Chart",
+                question: "Sebuah pola gambar tumbuh menggunakan aturan: $y = 3x + 1$ (dimana $x$ adalah langkah dan $y$ adalah jumlah balok). Berapakah jumlah balok pada langkah ke-5?",
+                options: ["16 balok", "15 balok", "18 balok", "12 balok"],
+                correct: "16 balok",
+                explanation: "Gunakan aturan perkalian ke langkah ke-5:<br>$$y = 3(5) + 1$$<br>$$y = 15 + 1 = 16$$."
+            },
+            {
+                title: "Timbangan Satu Langkah",
+                question: "Carilah nilai kelereng misteri $x$ pada timbangan yang seimbang berikut:<br><strong class='text-blue-600 text-lg font-mono'>$$x + 14 = 30$$</strong>",
+                options: ["x = 16", "x = 14", "x = 15", "x = 20"],
+                correct: "x = 16",
+                explanation: "Selesaikan satu langkah searah dengan mengurangi $14$ pada kedua sisi timbangan:<br>$$x = 30 - 14$$<br>$$x = 16$$."
+            },
+            {
+                title: "Timbangan Dua Langkah",
+                question: "Selesaikan persamaan dua langkah adil berikut untuk mendapatkan nilai $y$:<br><strong class='text-blue-600 text-lg font-mono'>$$2y + 5 = 17$$</strong>",
+                options: ["y = 6", "y = 12", "y = 8", "y = 5"],
+                correct: "y = 6",
+                explanation: "<strong>Langkah 1:</strong> Kurangkan $5$ dari kedua ruas:<br>$$2y = 17 - 5 \\implies 2y = 12$$<br><strong>Langkah 2:</strong> Bagi kedua ruas dengan $2$:<br>$$y = \\frac{12}{2} \\implies y = 6$$."
+            },
+            {
+                title: "Bahasa Rahasia Aljabar",
+                question: "Andi memiliki sejumlah kelereng ($k$). Budi memiliki $5$ kelereng <strong>lebih banyak</strong> daripada Andi. Jika digabungkan, total kelereng mereka adalah $19$. Persamaan manakah yang menggambarkan situasi ini?",
+                options: ["k + (k + 5) = 19", "k + 5 = 19", "k + (k - 5) = 19", "k - 5 = 19"],
+                correct: "k + (k + 5) = 19",
+                explanation: "Kelereng Andi = $k$. Kelereng Budi = $k + 5$.<br>Total penggabungan kelereng mereka berdua adalah:<br>$$\\text{Andi} + \\text{Budi} = 19$$<br>$$k + (k + 5) = 19$$."
+            },
+            {
+                title: "T-Chart Input-Output",
+                question: "Berikut adalah Tabel T yang menunjukkan hubungan input ($x$) dan output ($y$):<br>• $x = 1 \\rightarrow y = 4$<br>• $x = 2 \\rightarrow y = 7$<br>• $x = 3 \\rightarrow y = 10$<br>Aturan rumus yang tepat untuk mencocokkan nilai tersebut adalah...",
+                options: ["y = 3x + 1", "y = 4x", "y = 2x + 2", "y = x + 3"],
+                correct: "y = 3x + 1",
+                explanation: "Ujilah aturan $y = 3x + 1$ untuk setiap baris:<br>• $3(1) + 1 = 4$ (Benar)<br>• $3(2) + 1 = 7$ (Benar)<br>• $3(3) + 1 = 10$ (Benar)."
+            },
+            {
+                title: "Sandi Kebun Stroberi",
+                question: "Seorang petani memetik $s$ kotak stroberi. Hari berikutnya, ia memetik $3$ kali lipat dari hari pertama. Jika total stroberi dalam dua hari tersebut adalah $40$ kotak, berapakah banyak kotak stroberi pada hari pertama ($s$)?",
+                options: ["10 kotak", "15 kotak", "8 kotak", "12 kotak"],
+                correct: "10 kotak",
+                explanation: "Hari ke-1 = $s$. Hari ke-2 = $3s$.<br>Persamaan total penggabungan:<br>$$s + 3s = 40$$<br>$$4s = 40 \\implies s = 10$$."
+            },
+            {
+                title: "Timbangan Pembagian",
+                question: "Tentukan nilai variabel misteri $p$ dari bentuk pembagian seimbang di bawah ini:<br><strong class='text-blue-600 text-lg font-mono'>$$\\frac{p}{3} = 9$$</strong>",
+                options: ["p = 27", "p = 3", "p = 12", "p = 18"],
+                correct: "p = 27",
+                explanation: "Untuk membalikkan pembagian (undo division), lakukan perkalian di kedua ruas timbangan:<br>$$p = 9 \\times 3$$<br>$$p = 27$$."
+            },
+            {
+                title: "Dua Langkah Pengurangan",
+                question: "Temukan penyelesaian nilai $z$ dari persamaan dua langkah berikut:<br><strong class='text-blue-600 text-lg font-mono'>$$3z - 4 = 20$$</strong>",
+                options: ["z = 8", "z = 6", "z = 12", "z = 10"],
+                correct: "z = 8",
+                explanation: "<strong>Langkah 1:</strong> Tambahkan $4$ di kedua ruas untuk membatalkan pengurangan:<br>$$3z = 20 + 4 \\implies 3z = 24$$<br><strong>Langkah 2:</strong> Bagi dengan $3$ di kedua ruas:<br>$$z = \\frac{24}{3} \\implies z = 8$$."
+            },
+            {
+                title: "Pola Lilin Menyala",
+                question: "Sebuah lilin memiliki tinggi mula-mula $20$ cm. Setiap jam lilin menyala, tingginya berkurang $2$ cm. Jika tinggi lilin sekarang adalah $12$ cm, berapa jam lilin tersebut telah menyala ($t$)?",
+                options: ["4 jam", "3 jam", "5 jam", "6 jam"],
+                correct: "4 jam",
+                explanation: "Model aljabar penyusutan tinggi lilin:<br>$$20 - 2t = 12$$<br>Kurangi $20$ di kedua sisi:<br>$$-2t = 12 - 20 \\implies -2t = -8$$<br>Bagi dengan $-2$:<br>$$t = 4 \\text{ jam}$$."
+            },
+            {
+                title: "Tantangan Keseimbangan Akhir",
+                question: "Selesaikan persamaan dua variabel linear adil berikut untuk mendapatkan nilai $x$:<br><strong class='text-blue-600 text-lg font-mono'>$$5x + 8 = 3x + 18$$</strong>",
+                options: ["x = 5", "x = 4", "x = 3", "x = 2"],
+                correct: "x = 5",
+                explanation: "Kumpulkan variabel bervariabel $x$ di ruas kiri dan konstanta di ruas kanan:<br>$$5x - 3x = 18 - 8$$<br>$$2x = 10$$<br>$$x = 5$$."
+            }
+        ];
+
+        // --- 3. WARM-UP DATABASE ---
+        const warmupDatabase = [
+            {
+                symbol: "🍎",
+                question: "🍎 + 4 = 10",
+                options: [4, 6, 14],
+                correct: 6
+            },
+            {
+                symbol: "🍌",
+                question: "3 × 🍌 = 15",
+                options: [5, 12, 18],
+                correct: 5
+            },
+            {
+                symbol: "🍇",
+                question: "🍇 - 7 = 3",
+                options: [4, 10, 14],
+                correct: 10
+            }
+        ];
+
+        // --- 4. SYSTEM STATE ---
+        let scoreXP = 0;
+        let currentIdx = 0;
+        let correctAnswersCount = 0;
+        let activeQuestions = [];
+        let hasAnswered = false;
+
+        // Warm-up states
+        let currentWarmupIdx = 0;
+        let warmupCompleted = false;
+
+        // Canvas Scratchpad State
+        const canvas = document.getElementById('scratch-canvas');
+        const ctx = canvas.getContext('2d');
+        let isDrawing = false;
+
+        // Confetti Context State
+        const confettiCanvas = document.getElementById('confetti');
+        const confettiCtx = confettiCanvas.getContext('2d');
+        let confettiActive = false;
+        let particles = [];
+
+        // --- 5. NAVIGATION VIEW CONTROLLER ---
+        function showSection(sectionId) {
+            playSound('click');
+            // Hide all
+            document.getElementById('dashboard-view').classList.add('hidden');
+            document.getElementById('misi1-view').classList.add('hidden');
+            document.getElementById('misi2-view').classList.add('hidden');
+            document.getElementById('misi3-view').classList.add('hidden');
+            document.getElementById('quiz-view').classList.add('hidden');
+            document.getElementById('outcome-view').classList.add('hidden');
+
+            // Show current section
+            document.getElementById(`${sectionId}-view`).classList.remove('hidden');
+
+            // Trigger Dynamic visuals on first load of missions
+            if (sectionId === 'misi1') {
+                selectPatternStep(1);
+            } else {
+                triggerMathRender(document.getElementById(`${sectionId}-view`));
+            }
+        }
+
+        function backToHub() {
+            showSection('dashboard');
+            triggerMathRender(document.getElementById('dashboard-view'));
+        }
+
+        // --- 6. INITIAL ONLOAD AND RENDERING CODES ---
+        window.onload = function() {
+            // Wait for KaTeX auto-render to load, then run initial render
+            setTimeout(() => {
+                triggerMathRender(document.body);
+            }, 500);
+
+            initCanvas();
+            setupTouchGestures();
+            loadWarmupQuestion();
+        }
+
+        function triggerMathRender(element) {
+            if (typeof renderMathInElement !== 'undefined') {
+                try {
+                    renderMathInElement(element || document.body, {
+                        delimiters: [
+                            {left: '$$', right: '$$', display: true},
+                            {left: '$', right: '$', display: false}
+                        ],
+                        throwOnError: false
+                    });
+                } catch (e) {
+                    console.error("Math parsing failed: ", e);
+                }
+            }
+        }
+
+        // --- 7. INTERACTIVE WARM-UP ENGINE ---
+        function loadWarmupQuestion() {
+            if (warmupCompleted) return;
+
+            const puzzle = warmupDatabase[currentWarmupIdx];
+            document.getElementById('warmup-step-indicator').innerText = `Teka-teki ${currentWarmupIdx + 1} dari ${warmupDatabase.length}`;
+            
+            // Render styled formula inside the warm-up block
+            document.getElementById('warmup-question-box').innerHTML = `
+                <span class="inline-block animate-bounce">${puzzle.symbol}</span>
+                <span class="font-mono text-xl tracking-wide bg-slate-100 px-3 py-1 rounded-xl border border-slate-200">${puzzle.question}</span>
+            `;
+
+            const optGrid = document.getElementById('warmup-options-grid');
+            optGrid.innerHTML = '';
+
+            puzzle.options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = "px-4 py-2.5 bg-white border-2 border-green-200 text-green-700 hover:bg-green-50 active:scale-95 transition rounded-xl font-extrabold text-sm shadow-sm";
+                btn.innerText = opt;
+                btn.onclick = () => verifyWarmupResponse(opt, puzzle.correct, btn);
+                optGrid.appendChild(btn);
+            });
+
+            triggerMathRender(document.getElementById('warmup-container'));
+        }
+
+        function verifyWarmupResponse(chosen, correct, buttonElement) {
+            if (chosen === correct) {
+                playSound('correct');
+                buttonElement.className = "px-4 py-2.5 bg-emerald-500 border-2 border-emerald-600 text-white rounded-xl font-extrabold text-sm shadow-md animate-ping";
+                
+                setTimeout(() => {
+                    currentWarmupIdx++;
+                    if (currentWarmupIdx < warmupDatabase.length) {
+                        loadWarmupQuestion();
+                    } else {
+                        completeWarmupSequence();
+                    }
+                }, 400);
+            } else {
+                playSound('incorrect');
+                buttonElement.className = "px-4 py-2.5 bg-rose-100 border-2 border-rose-300 text-rose-700 rounded-xl font-extrabold text-sm shadow-sm transition shake-anim";
+                showToast("Coba tebak lagi nilai buahnya!", "bg-rose-500");
+                setTimeout(() => {
+                    buttonElement.className = "px-4 py-2.5 bg-white border-2 border-green-200 text-green-700 hover:bg-green-50 rounded-xl font-extrabold text-sm shadow-sm";
+                }, 1000);
+            }
+        }
+
+        function completeWarmupSequence() {
+            warmupCompleted = true;
+            playSound('level-up');
+            triggerConfetti();
+
+            scoreXP += 50;
+            document.getElementById('xp-display').innerText = `${scoreXP} XP`;
+
+            document.getElementById('warmup-status').className = "bg-emerald-600 text-white text-[10px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider animate-pulse";
+            document.getElementById('warmup-status').innerText = "Warm-Up Selesai! (+50 XP)";
+
+            // Reveal congrats banner
+            document.getElementById('warmup-congrats-banner').classList.remove('hidden');
+            
+            // Clean dynamic puzzle options box
+            document.getElementById('warmup-options-grid').innerHTML = '✅ Sukses!';
+            document.getElementById('warmup-question-box').innerHTML = '🍎 🍌 🍇 Berhasil Dipecahkan!';
+            
+            // Highlight start quiz button with epic glow
+            const quizBtn = document.getElementById('start-quiz-btn');
+            quizBtn.className = "px-8 py-4 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-extrabold rounded-2xl shadow-xl hover:shadow-2xl hover:scale-105 transition transform duration-200 text-sm md:text-base flex items-center gap-2 ring-4 ring-emerald-300 ring-offset-2 animate-bounce";
+        }
+
+
+        // --- 8. MISSION 1 SPECIFIC VISUALIZERS ---
+        function selectPatternStep(step) {
+            playSound('click');
+            const visualContainer = document.getElementById('pattern-visual');
+            visualContainer.innerHTML = '';
+
+            // Update button styles in UI
+            const buttons = document.querySelectorAll('#misi1-view button');
+            buttons.forEach((btn, idx) => {
+                if (btn.textContent.includes(step.toString())) {
+                    btn.className = "px-3.5 py-1.5 bg-[#4CC9F0] text-white rounded-lg text-xs font-bold shadow";
+                } else if (btn.textContent !== 'Kembali') {
+                    btn.className = "px-3.5 py-1.5 bg-slate-200 text-slate-700 rounded-lg text-xs font-bold hover:bg-slate-300";
+                }
+            });
+
+            // Highlight corresponding row in T-Chart Table
+            const rows = ['row-step-1', 'row-step-2', 'row-step-3'];
+            rows.forEach((row, idx) => {
+                const el = document.getElementById(row);
+                if (idx === step - 1) {
+                    el.className = "bg-blue-100/80 font-bold text-blue-900";
+                } else {
+                    el.className = idx % 2 === 0 ? "bg-blue-50/50" : "";
+                }
+            });
+
+            // Render visual block boxes based on: y = 2x + 1
+            const totalBlocks = 2 * step + 1;
+            for (let i = 0; i < totalBlocks; i++) {
+                const block = document.createElement('div');
+                block.className = "w-6 h-6 bg-[#4361EE] border border-blue-900 rounded shadow-sm animate-pulse";
+                visualContainer.appendChild(block);
+            }
+        }
+
+        // --- 9. MISSION 3 SANDBOX TRANSLATOR ---
+        function translateSandbox(type) {
+            playSound('click');
+            const box = document.getElementById('sandbox-result');
+            box.classList.remove('hidden');
+
+            if (type === 'lebih') {
+                box.innerHTML = `Kalimat: "3 tahun lebih tua dari umur kakak ($x$)"<br>➔ Terjemahan Aljabar: $x + 3$`;
+            } else if (type === 'kali') {
+                box.innerHTML = `Kalimat: "Dua kali lipat dari berat kucing ($y$)"<br>➔ Terjemahan Aljabar: $2y$`;
+            }
+            triggerMathRender(box);
+        }
+
+        // --- 10. QUIZ MANAGEMENT ENGINE ---
+        function startQuizMode() {
+            currentIdx = 0;
+            correctAnswersCount = 0;
+            activeQuestions = [...questionDatabase];
+
+            document.getElementById('dashboard-view').classList.add('hidden');
+            document.getElementById('outcome-view').classList.add('hidden');
+            document.getElementById('quiz-view').classList.remove('hidden');
+
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            hasAnswered = false;
+            const problem = activeQuestions[currentIdx];
+
+            document.getElementById('quiz-index-indicator').innerText = `Soal ${currentIdx + 1} / ${activeQuestions.length}`;
+            
+            // Progress Bar Width
+            const progressPercent = (currentIdx / activeQuestions.length) * 100;
+            document.getElementById('progress-bar').style.width = `${progressPercent}%`;
+
+            // Render Math equations
+            document.getElementById('problem-box').innerHTML = `
+                <h3 class="kids-heading text-lg font-bold text-slate-800">${problem.title}</h3>
+                <p class="text-sm md:text-base text-slate-600 leading-relaxed">${problem.question}</p>
+            `;
+
+            // Options grid shuffle
+            const grid = document.getElementById('options-grid');
+            grid.innerHTML = '';
+
+            const shuffledOpts = shuffleArray(problem.options);
+            shuffledOpts.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = "w-full p-4 bg-[#F8F9FA] hover:bg-slate-100 border-2 border-slate-200 rounded-2xl text-xs md:text-sm font-bold text-slate-800 transition btn-bounce flex justify-between items-center q-option-btn";
+                btn.innerHTML = `<span>${opt}</span><span class="opacity-50 text-[10px]">PILIH ➔</span>`;
+                btn.onclick = () => verifyUserResponse(btn, opt, problem.correct, problem.explanation);
+                grid.appendChild(btn);
+            });
+
+            // Reset navigation footer styles
+            document.getElementById('explanation-box').classList.add('hidden');
+            const nextBtn = document.getElementById('next-question-btn');
+            nextBtn.innerText = "Lewati / Lanjut ▶";
+            nextBtn.className = "bg-gradient-to-r from-gray-400 to-gray-500 hover:from-gray-500 hover:to-gray-600 text-white font-extrabold px-6 py-2.5 rounded-xl text-xs md:text-sm shadow-md transition flex items-center gap-1 cursor-pointer";
+
+            triggerMathRender(document.getElementById('quiz-view'));
+        }
+
+        function verifyUserResponse(element, chosen, correct, explanation) {
+            if (hasAnswered) return;
+            hasAnswered = true;
+
+            const isCorrect = chosen === correct;
+
+            // Highlight matching choices
+            const buttons = document.querySelectorAll('.q-option-btn');
+            buttons.forEach(btn => {
+                btn.disabled = true;
+                btn.classList.add('opacity-40');
+            });
+
+            element.classList.remove('opacity-40');
+            if (isCorrect) {
+                element.className = "w-full p-4 border-2 border-emerald-500 bg-emerald-100 text-emerald-800 rounded-2xl text-xs md:text-sm font-bold flex justify-between items-center";
+                element.innerHTML = `<span>${chosen}</span> <span class="bg-emerald-500 text-white px-2.5 py-1 rounded-lg text-[9px] font-extrabold">✓ BENAR! (+15 XP)</span>`;
+                playSound('correct');
+                scoreXP += 15;
+                correctAnswersCount++;
+                document.getElementById('xp-display').innerText = `${scoreXP} XP`;
+                triggerConfetti();
+                showToast("✨ Sempurna! Kamu hebat!", "bg-emerald-500");
+            } else {
+                element.className = "w-full p-4 border-2 border-rose-500 bg-rose-100 text-rose-800 rounded-2xl text-xs md:text-sm font-bold flex justify-between items-center";
+                element.innerHTML = `<span>${chosen}</span> <span class="bg-rose-500 text-white px-2.5 py-1 rounded-lg text-[9px] font-extrabold">✕ SALAH</span>`;
+                playSound('incorrect');
+                showToast("💡 Jangan berkecil hati, ayo pelajari caranya!", "bg-rose-500");
+            }
+
+            // Reveal explanation panel
+            const explanationBox = document.getElementById('explanation-box');
+            explanationBox.className = `mt-6 p-4 rounded-2xl text-xs md:text-sm leading-relaxed border-2 ${isCorrect ? 'border-emerald-200 bg-emerald-50 text-emerald-950' : 'border-rose-200 bg-rose-50 text-rose-950'} animate-fade-in`;
+            explanationBox.innerHTML = `
+                <div class="font-extrabold text-sm mb-1">📖 Pembahasan Aljabar:</div>
+                <div>${explanation}</div>
+            `;
+            explanationBox.classList.remove('hidden');
+
+            // Change next button status
+            const nextBtn = document.getElementById('next-question-btn');
+            nextBtn.innerText = "Soal Berikutnya ▶";
+            nextBtn.className = "bg-gradient-to-r from-[#4CC9F0] to-[#4895EF] text-white hover:scale-105 font-extrabold px-6 py-2.5 rounded-xl text-xs md:text-sm shadow-md transition flex items-center gap-1 cursor-pointer";
+
+            triggerMathRender(explanationBox);
+        }
+
+        function nextQuestion() {
+            playSound('click');
+            currentIdx++;
+            if (currentIdx < activeQuestions.length) {
+                loadQuestion();
+            } else {
+                showFinalResults();
+            }
+        }
+
+        function showFinalResults() {
+            document.getElementById('quiz-view').classList.add('hidden');
+            document.getElementById('outcome-view').classList.remove('hidden');
+
+            const accuracy = Math.round((correctAnswersCount / activeQuestions.length) * 100);
+            document.getElementById('outcome-xp').innerText = `+${correctAnswersCount * 15} XP`;
+            document.getElementById('outcome-accuracy').innerText = `${accuracy}%`;
+
+            const title = document.getElementById('outcome-title');
+            const subtitle = document.getElementById('outcome-subtitle');
+            const emoji = document.getElementById('outcome-emoji');
+
+            if (accuracy === 100) {
+                emoji.innerText = "👑⭐";
+                title.innerText = "Grandmaster Aljabar Kelas 5!";
+                subtitle.innerText = "Luar biasa! Pemahaman konsep pola dan timbanganmu siap tempur untuk tantangan kelas berikutnya.";
+                triggerConfetti();
+            } else if (accuracy >= 70) {
+                emoji.innerText = "😎🏆";
+                title.innerText = "Sangat Membanggakan!";
+                subtitle.innerText = "Kamu berhasil memecahkan sebagian besar sandi dan keseimbangan timbangan aljabar.";
+                triggerConfetti();
+            } else {
+                emoji.innerText = "🤔🌱";
+                title.innerText = "Ayo Semangat Belajar Lagi!";
+                subtitle.innerText = "Mari selidiki kembali petunjuk-petunjuk aljabar di Misi 1, 2, dan 3 agar pemahamanmu makin kokoh.";
+            }
+        }
+
+        function restartQuiz() {
+            startQuizMode();
+        }
+
+        // --- 11. SHUFFLE ARRAY UTILITY ---
+        function shuffleArray(array) {
+            let shuffled = [...array];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        }
+
+        // --- 12. DOODLE CANVAS SYSTEM (Scratchpad) ---
+        function toggleScratchpad() {
+            const pad = document.getElementById('scratchpad');
+            pad.classList.toggle('hidden');
+            if (!pad.classList.contains('hidden')) {
+                resizeCanvas();
+            }
+        }
+
+        function initCanvas() {
+            canvas.addEventListener('mousedown', (e) => {
+                isDrawing = true;
+                ctx.beginPath();
+                const r = canvas.getBoundingClientRect();
+                ctx.moveTo(e.clientX - r.left, e.clientY - r.top);
+            });
+            canvas.addEventListener('mousemove', (e) => {
+                if (!isDrawing) return;
+                const r = canvas.getBoundingClientRect();
+                ctx.lineTo(e.clientX - r.left, e.clientY - r.top);
+                ctx.stroke();
+            });
+            canvas.addEventListener('mouseup', () => isDrawing = false);
+
+            // Touch support
+            canvas.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                isDrawing = true;
+                ctx.beginPath();
+                const t = e.touches[0];
+                const r = canvas.getBoundingClientRect();
+                ctx.moveTo(t.clientX - r.left, t.clientY - r.top);
+            });
+            canvas.addEventListener('touchmove', (e) => {
+                e.preventDefault();
+                if (!isDrawing) return;
+                const t = e.touches[0];
+                const r = canvas.getBoundingClientRect();
+                ctx.lineTo(t.clientX - r.left, t.clientY - r.top);
+                ctx.stroke();
+            });
+            canvas.addEventListener('touchend', () => isDrawing = false);
+        }
+
+        function resizeCanvas() {
+            const parent = canvas.parentNode;
+            canvas.width = parent.clientWidth;
+            canvas.height = parent.clientHeight;
+            ctx.lineCap = 'round';
+            ctx.lineWidth = 3.5;
+            ctx.strokeStyle = '#F72585'; 
+        }
+
+        function clearCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+
+        // --- 13. SWIPE GESTURES ---
+        let startX = 0;
+        function setupTouchGestures() {
+            const wrapper = document.getElementById('quiz-view');
+            wrapper.addEventListener('touchstart', (e) => {
+                startX = e.changedTouches[0].screenX;
+            }, false);
+
+            wrapper.addEventListener('touchend', (e) => {
+                const endX = e.changedTouches[0].screenX;
+                const threshold = 80;
+                if (startX - endX > threshold) {
+                    nextQuestion();
+                }
+            }, false);
+        }
+
+        // --- 14. TOAST NOTIFIER ---
+        function showToast(text, bgClass) {
+            const toast = document.getElementById('toast');
+            const toastText = document.getElementById('toast-text');
+            toast.className = `fixed bottom-12 left-1/2 transform -translate-x-1/2 z-50 text-white font-black px-6 py-3.5 rounded-2xl shadow-xl flex items-center gap-2 animate-bounce ${bgClass}`;
+            toastText.innerHTML = text;
+            toast.classList.remove('hidden');
+            setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 4000);
+        }
+
+        // --- 15. CONFETTI CELEBRATION EFFECT ---
+        function triggerConfetti() {
+            confettiActive = true;
+            confettiCanvas.classList.remove('hidden');
+            confettiCanvas.width = window.innerWidth;
+            confettiCanvas.height = window.innerHeight;
+            
+            particles = [];
+            for (let i = 0; i < 70; i++) {
+                particles.push({
+                    x: Math.random() * confettiCanvas.width,
+                    y: Math.random() * confettiCanvas.height - confettiCanvas.height,
+                    r: Math.random() * 5 + 4,
+                    d: Math.random() * confettiCanvas.height,
+                    color: `hsl(${Math.random() * 360}, 100%, 70%)`,
+                    tilt: Math.random() * 10 - 5,
+                    tiltAngleIncremental: Math.random() * 0.07 + 0.02,
+                    tiltAngle: 0
+                });
+            }
+
+            animateConfetti();
+            setTimeout(() => {
+                confettiActive = false;
+                confettiCanvas.classList.add('hidden');
+            }, 2500);
+        }
+
+        function animateConfetti() {
+            if (!confettiActive) return;
+            confettiCtx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+            
+            particles.forEach((p, idx) => {
+                p.tiltAngle += p.tiltAngleIncremental;
+                p.y += (Math.cos(p.d) + 3 + p.r / 2) / 2;
+                p.x += Math.sin(p.tiltAngle);
+                p.tilt = Math.sin(p.tiltAngle - idx / 3) * 15;
+
+                confettiCtx.beginPath();
+                confettiCtx.lineWidth = p.r;
+                confettiCtx.strokeStyle = p.color;
+                confettiCtx.moveTo(p.x + p.tilt + p.r / 2, p.y);
+                confettiCtx.lineTo(p.x + p.tilt, p.y + p.tilt + p.r / 2);
+                confettiCtx.stroke();
+            });
+
+            requestAnimationFrame(animateConfetti);
+        }
+    </script>
+</body>
+</html>
